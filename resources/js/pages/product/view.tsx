@@ -15,16 +15,16 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-
 export default function Product() {
     const store = useProductStore();
     const { products } = usePage().props as unknown as { products: ProductType[] };
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product" />
             <FormDialog />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <div className="flex h-full w-full flex-col gap-4 rounded-xl p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight">Products</h2>

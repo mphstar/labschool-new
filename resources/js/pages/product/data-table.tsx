@@ -41,7 +41,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     });
 
     return (
-        <>
+        <div className=''>
             <HeadTablePagination
                 table={table}
                 action={
@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </Select>
                 }
             />
-            <div className="rounded-md border">
+            <div className="rounded-md border w-full my-4 p-4 flex flex-col">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -92,6 +92,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 </Table>
             </div>
             <DataTablePagination table={table} />
-        </>
+        </div>
     );
 }
