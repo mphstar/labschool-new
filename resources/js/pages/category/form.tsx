@@ -7,34 +7,63 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import useProductStore from '@/stores/useProduct';
 import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 const FormDialog = () => {
     const context = useProductStore();
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
+        id: context.currentRow?.id ?? 0,
+        name: context.currentRow?.name ?? '',
     });
+
+    useEffect(() => {
+        if (context.currentRow) {
+            setData('id', context.currentRow.id);
+            setData('name', context.currentRow.name);
+        }
+    }, [context.currentRow]);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        post(route('category.store'), {
-            onSuccess: () => {
-                reset();
-                context.setOpen(false);
+        if (context.dialog == 'create') {
+            post(route('category.store'), {
+                onSuccess: () => {
+                    reset();
+                    context.setOpen(false);
 
-                toast({
-                    title: 'Success',
-                    description: 'Category created successfully',
-                });
-            },
-            onError: (errors) => {
-                toast({
-                    title: 'Error',
-                    description: "Cek kembali data yang anda masukkan",
-                })
-            },
-        });
+                    toast({
+                        title: 'Success',
+                        description: 'Category created successfully',
+                    });
+                },
+                onError: (errors) => {
+                    toast({
+                        title: 'Error',
+                        description: 'Cek kembali data yang anda masukkan',
+                    });
+                },
+            });
+        } else {
+            post(route('category.update'), {
+                onSuccess: () => {
+                    reset();
+                    context.setOpen(false);
+
+                    toast({
+                        title: 'Success',
+                        description: 'Category updated successfully',
+                    });
+                },
+                onError: (errors) => {
+                    toast({
+                        title: 'Error',
+                        description: 'Cek kembali data yang anda masukkan',
+                    });
+                },
+            });
+        }
     };
 
     return (
@@ -47,9 +76,9 @@ const FormDialog = () => {
         >
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader className="text-left">
-                    <DialogTitle>{'Add New User'}</DialogTitle>
+                    <DialogTitle>{`${context.dialog == 'create' ? 'Add' : 'Update'} New Category`}</DialogTitle>
                     <DialogDescription>
-                        {'Create new user here. '}
+                        {`${context.dialog == 'create' ? 'Create new' : 'Update'} Category here. `}
                         Click save when you&apos;re done.
                     </DialogDescription>
                 </DialogHeader>
@@ -62,12 +91,11 @@ const FormDialog = () => {
                                 onChange={(e) => {
                                     setData('name', e.target.value);
                                 }}
-                                placeholder="John"
+                                placeholder="Masukkan nama category"
                                 className="col-span-4"
                                 autoComplete="off"
-                                
                             />
-                            <InputError message={errors.name} className="mt-2 col-span-4 col-start-3" />
+                            <InputError message={errors.name} className="col-span-4 col-start-3 mt-2" />
                         </div>
                     </form>
                 </ScrollArea>

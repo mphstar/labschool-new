@@ -25,6 +25,19 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+const reportNavItems: NavItem[] = [
+    {
+        title: 'History',
+        url: '#',
+        icon: LucideBetweenVerticalStart,
+    },
+    {
+        title: 'Report',
+        url: '#',
+        icon: PackageSearch,
+    },
+];
+
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
@@ -55,6 +68,7 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                <NavMain title={'Report'} items={reportNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

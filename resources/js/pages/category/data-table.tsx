@@ -15,8 +15,10 @@ import { HeadTablePagination } from '@/components/ui/head-table';
 import { DataTablePagination } from '@/components/ui/pagination-control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { router } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import Swal from 'sweetalert2';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -34,7 +36,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onRowSelectionChange: (rowSelection) => {
@@ -42,26 +43,72 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         },
         state: {
             sorting,
-            columnFilters,
             rowSelection,
         },
     });
+
+    const onDelete = () => {
+        const payloadRequest = table.getFilteredSelectedRowModel().rows.map((row) => {
+            const { id } = row.original as { id: number };
+            return { id };
+        });
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                Swal.fire({
+                    title: 'Deleting...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                router.post(
+                    route('category.delete-multiple'),
+                    {
+                        data: payloadRequest,
+                    },
+                    {
+                        onSuccess: () => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your file has been deleted.',
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                            });
+                        },
+                        onError: () => {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong.',
+                                icon: 'error',
+                                confirmButtonText: 'OK',
+                            });
+                        },
+                        onFinish: () => {
+                            table.resetRowSelection();
+                        },
+                    },
+                );
+            }
+        });
+    };
 
     return (
         <div className="">
             <HeadTablePagination
                 table={table}
                 action={
-                    <Select onValueChange={(value) => table.getColumn('status')?.setFilterValue(value == 'all' ? undefined : value)}>
-                        <SelectTrigger className="">
-                            <SelectValue placeholder="Kategori" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Semua</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="success">Success</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div></div>
                 }
             />
 
@@ -74,7 +121,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         size="sm"
                         className="gap-1"
                         onClick={() => {
-                            console.log(table.getFilteredSelectedRowModel().rows.map((row) => row.original));
+                            onDelete();
                         }}
                     >
                         <Trash2 className="h-4 w-4" />

@@ -2,8 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
+import { router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -11,6 +13,54 @@ export type CategoryType = {
     id: number;
     name: string;
     created_at: string;
+};
+
+const onDelete = (id: number) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Deleting...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            router.post(
+                route('category.delete'),
+                {
+                    id,
+                },
+                {
+                    onSuccess: () => {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Your category has been deleted.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                        });
+                    },
+                    onError: () => {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
+                    },
+                    onFinish: () => {},
+                },
+            );
+        }
+    });
 };
 
 export const columns: ColumnDef<CategoryType>[] = [
@@ -83,7 +133,13 @@ export const columns: ColumnDef<CategoryType>[] = [
                         >
                             Edit Data
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Delete Data</DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                onDelete(payment.id);
+                            }}
+                        >
+                            Delete Data
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
