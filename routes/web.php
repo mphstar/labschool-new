@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [CategoryController::class, 'deleteMultiple'])->name('category.delete-multiple');
         Route::post('delete', [CategoryController::class, 'delete'])->name('category.delete');
         Route::post('update', [CategoryController::class, 'update'])->name('category.update');
+    });
+
+
+    Route::prefix('user')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('user.index');
+        Route::post('store', [UserController::class, 'store'])->name('user.store');
+        Route::post('delete-multiple', [UserController::class, 'deleteMultiple'])->name('user.delete-multiple');
+        Route::post('delete', [UserController::class, 'delete'])->name('user.delete');
+        Route::post('update', [UserController::class, 'update'])->name('user.update');
     });
 });
 

@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, LucideBetweenVerticalStart, PackageSearch } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, LucideBetweenVerticalStart, LucideUser, PackageSearch } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -13,42 +13,55 @@ const mainNavItems: NavItem[] = [
         url: '/dashboard',
         icon: LayoutGrid,
     },
+];
+
+const masterNavItems: NavItem[] = [
     {
-        title: 'Category',
-        url: '/category',
+        title: 'Pengguna',
+        url: '/user',
+        icon: LucideUser,
+    },
+    {
+        title: 'Kelas',
+        url: '/kelas',
         icon: LucideBetweenVerticalStart,
     },
     {
-        title: 'Product',
-        url: '/product',
+        title: 'Mata Pelajaran',
+        url: '/mata-pelajaran',
         icon: PackageSearch,
     },
 ];
 
 const reportNavItems: NavItem[] = [
     {
-        title: 'History',
+        title: 'Keuangan',
         url: '#',
         icon: LucideBetweenVerticalStart,
     },
     {
-        title: 'Report',
+        title: 'Surat',
         url: '#',
         icon: PackageSearch,
+    },
+    {
+        title: 'Presensi',
+        url: '/presensi',
+        icon: LucideUser,
     },
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        url: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        url: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     url: 'https://github.com/laravel/react-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     url: 'https://laravel.com/docs/starter-kits',
+    //     icon: BookOpen,
+    // },
 ];
 
 export function AppSidebar() {
@@ -68,7 +81,8 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
-                <NavMain title={'Report'} items={reportNavItems} />
+                <NavMain title={'Master Data'} items={masterNavItems} />
+                <NavMain title={'Pencatatan'} items={reportNavItems} />
             </SidebarContent>
 
             <SidebarFooter>
