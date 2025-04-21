@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -34,6 +35,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [UserController::class, 'deleteMultiple'])->name('user.delete-multiple');
         Route::post('delete', [UserController::class, 'delete'])->name('user.delete');
         Route::post('update', [UserController::class, 'update'])->name('user.update');
+    });
+
+    Route::prefix('kelas')->group(function () {
+        Route::get('/', [KelasController::class, 'index'])->name('kelas.index');
+        Route::post('store', [KelasController::class, 'store'])->name('kelas.store');
+        Route::post('delete-multiple', [KelasController::class, 'deleteMultiple'])->name('kelas.delete-multiple');
+        Route::post('delete', [KelasController::class, 'delete'])->name('kelas.delete');
+        Route::post('update', [KelasController::class, 'update'])->name('kelas.update');
     });
 });
 
