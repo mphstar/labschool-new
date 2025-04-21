@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\MataPelajaranController;
+use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -52,7 +53,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [MataPelajaranController::class, 'deleteMultiple'])->name('mata-pelajaran.delete-multiple');
         Route::post('delete', [MataPelajaranController::class, 'delete'])->name('mata-pelajaran.delete');
         Route::post('update', [MataPelajaranController::class, 'update'])->name('mata-pelajaran.update');
+
+
+        Route::prefix('{id}/materi')->group(function () {
+            Route::get('/', [MateriController::class, 'index'])->name('materi.index');
+            Route::post('store', [MateriController::class, 'store'])->name('materi.store');
+            Route::post('delete-multiple', [MateriController::class, 'deleteMultiple'])->name('materi.delete-multiple');
+            Route::post('delete', [MateriController::class, 'delete'])->name('materi.delete');
+            Route::post('update', [MateriController::class, 'update'])->name('materi.update');
+    
+        });
     });
+
+    
+
 });
 
 require __DIR__ . '/settings.php';

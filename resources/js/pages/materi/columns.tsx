@@ -2,23 +2,22 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
-import { Link, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { KelasType } from '../kelas/columns';
+import { MataPelajaranType } from '../mata-pelajaran/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type MataPelajaranType = {
+export type MateriType = {
     id: number;
     name: string;
-    kategori: 'wajib' | 'pilihan';
-    kelas: KelasType;
+    mataPelajaran: MataPelajaranType;
     created_at: string;
 };
 
-const onDelete = (id: number) => {
+const onDelete = (id: number, mapel_id: number) => {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -38,7 +37,9 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('mata-pelajaran.delete'),
+                route('materi.delete', {
+                    id: mapel_id
+                }),
                 {
                     id,
                 },
@@ -46,7 +47,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your mata pelajaran has been deleted.',
+                            text: 'Your materi has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -66,7 +67,7 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<MataPelajaranType>[] = [
+export const columns: ColumnDef<MateriType>[] = [
     {
         id: 'select',
         header: ({ table }) => (
@@ -101,37 +102,6 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
             return <span className="px-2">{cell.getValue<string>()}</span>;
         },
     },
-    {
-        accessorKey: 'kategori',
-        header: ({ column }) => {
-            return (
-                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Kategori
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            const isWajib = value === 'wajib';
-            return (
-                <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        isWajib ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                    }`}
-                >
-                    {isWajib ? 'Wajib' : 'Ekstrakurikuler'}
-                </span>
-            );
-        },
-    },
-    {
-        accessorKey: 'kelas.name',
-        header: 'Kelas',
-        cell: ({ cell }) => {
-            return <span className="px-2">{cell.getValue<string>()}</span>;
-        },
-    },
 
     {
         accessorKey: 'created_at',
@@ -146,6 +116,7 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
         cell: ({ row }) => {
             const payment = row.original;
             const store = useProductStore();
+            const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
             return (
                 <DropdownMenu>
@@ -159,9 +130,6 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
-                        <Link href={`/mata-pelajaran/${payment.id}/materi`}>
-                            <DropdownMenuItem>Lihat Materi</DropdownMenuItem>
-                        </Link>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
@@ -173,7 +141,7 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => {
-                                onDelete(payment.id);
+                                onDelete(payment.id, mapel.id);
                             }}
                         >
                             Delete Data

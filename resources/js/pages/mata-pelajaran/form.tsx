@@ -29,7 +29,8 @@ const FormDialog = () => {
             setData('id', context.currentRow.id);
             setData('name', context.currentRow.name);
             setData('kategori', context.currentRow.kategori);
-            setData('kelas_id', context.currentRow.kelas_id.toString());
+            setData('kelas_id', context.currentRow.kelas_id != null ? context.currentRow.kelas_id.toString() : undefined);
+
         }
     }, [context.currentRow]);
 
