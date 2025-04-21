@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -43,6 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [KelasController::class, 'deleteMultiple'])->name('kelas.delete-multiple');
         Route::post('delete', [KelasController::class, 'delete'])->name('kelas.delete');
         Route::post('update', [KelasController::class, 'update'])->name('kelas.update');
+    });
+
+    Route::prefix('mata-pelajaran')->group(function () {
+        Route::get('/', [MataPelajaranController::class, 'index'])->name('mata-pelajaran.index');
+        Route::post('store', [MataPelajaranController::class, 'store'])->name('mata-pelajaran.store');
+        Route::post('delete-multiple', [MataPelajaranController::class, 'deleteMultiple'])->name('mata-pelajaran.delete-multiple');
+        Route::post('delete', [MataPelajaranController::class, 'delete'])->name('mata-pelajaran.delete');
+        Route::post('update', [MataPelajaranController::class, 'update'])->name('mata-pelajaran.update');
     });
 });
 
