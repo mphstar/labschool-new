@@ -36,7 +36,7 @@ const masterNavItems: NavItem[] = [
 const reportNavItems: NavItem[] = [
     {
         title: 'Keuangan',
-        url: '#',
+        url: '/keuangan',
         icon: LucideBetweenVerticalStart,
     },
     {

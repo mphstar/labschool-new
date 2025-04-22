@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\UserController;
@@ -63,6 +64,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('update', [MateriController::class, 'update'])->name('materi.update');
     
         });
+    });
+
+    Route::prefix('keuangan')->group(function () {
+        Route::get('/', [KeuanganController::class, 'index'])->name('keuangan.index');
+        Route::post('store', [KeuanganController::class, 'store'])->name('keuangan.store');
+        Route::post('delete-multiple', [KeuanganController::class, 'deleteMultiple'])->name('keuangan.delete-multiple');
+        Route::post('delete', [KeuanganController::class, 'delete'])->name('keuangan.delete');
+        Route::post('update', [KeuanganController::class, 'update'])->name('keuangan.update');
     });
 
     

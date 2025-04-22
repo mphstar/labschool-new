@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
 import { router } from '@inertiajs/react';
@@ -9,11 +10,14 @@ import Swal from 'sweetalert2';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type UserType = {
+export type KeuanganType = {
     id: number;
-    name: string;
-    email: string;
-    role: 'admin' | 'user';
+    keterangan: string;
+    jenis: 'masuk' | 'keluar';
+    tipe_pembayaran: 'tunai' | 'transfer';
+    bukti_pembayaran: string | File;
+    jumlah: number;
+    tanggal: string;
     created_at: string;
 };
 
@@ -37,7 +41,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('user.delete'),
+                route('keuangan.delete'),
                 {
                     id,
                 },
@@ -45,7 +49,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your user has been deleted.',
+                            text: 'Your keuangan has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -65,7 +69,7 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<UserType>[] = [
+export const columns: ColumnDef<KeuanganType>[] = [
     {
         id: 'select',
         header: ({ table }) => (
@@ -87,11 +91,11 @@ export const columns: ColumnDef<UserType>[] = [
         cell: ({ row }) => row.index + 1,
     },
     {
-        accessorKey: 'name',
+        accessorKey: 'keterangan',
         header: ({ column }) => {
             return (
                 <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Name
+                    Keterangan
                     <ArrowUpDown className="ml-1 h-4 w-4" />
                 </Button>
             );
@@ -101,31 +105,57 @@ export const columns: ColumnDef<UserType>[] = [
         },
     },
     {
-        accessorKey: 'email',
-        header: ({ column }) => {
+        accessorKey: 'jenis',
+        header: 'Jenis',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <span className="">{value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</span>;
+        },
+    },
+    {
+        accessorKey: 'tipe_pembayaran',
+        header: 'Tipe Pembayaran',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <span className="">{value === 'tunai' ? 'Tunai' : 'Transfer'}</span>;
+        },
+    },
+    {
+        accessorKey: 'jumlah',
+        header: 'Jumlah',
+        cell: ({ cell }) => {
+            const value = cell.getValue<number>();
+            return <span className="">Rp {value.toLocaleString('id-ID')}</span>;
+        },
+    },
+    {
+        accessorKey: 'bukti_pembayaran',
+        header: 'Bukti Pembayaran',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
             return (
-                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Email
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="link" className="text-blue-500 hover:underline px-0">
+                            Lihat Bukti
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md sm:max-w-xl">
+                        <DialogHeader>
+                            <DialogTitle>Bukti Pembayaran</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex w-full justify-center">
+                            <img src={value} alt="Bukti Pembayaran" className="max-h-[400px] w-auto rounded border" />
+                        </div>
+                    </DialogContent>
+                </Dialog>
             );
         },
-        cell: ({ cell }) => {
-            return <span className="px-2">{cell.getValue<string>()}</span>;
-        },
     },
+
     {
-        accessorKey: 'role',
-        header: 'Role',
-        cell: ({ cell }) => {
-            const role = cell.getValue<string>();
-            const badgeColor = role === 'admin' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800';
-            return <span className={`rounded px-2 py-1 font-semibold text-xs ${badgeColor}`}>{role}</span>;
-        },
-    },
-    {
-        accessorKey: 'created_at',
-        header: 'Created At',
+        accessorKey: 'tanggal',
+        header: 'Tanggal',
         cell: ({ cell }) => {
             const date = new Date(cell.getValue<string>());
             return <span>{date.toLocaleDateString('id-ID')}</span>;
