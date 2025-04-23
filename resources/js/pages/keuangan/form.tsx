@@ -127,10 +127,11 @@ const FormDialog = () => {
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
                             <Label className="col-span-2 text-right">Jumlah</Label>
                             <Input
-                                type="number"
-                                value={data.jumlah}
+                                type="text"
+                                value={data.jumlah.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Format for display
                                 onChange={(e) => {
-                                    setData('jumlah', e.target.value);
+                                    const rawValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                    setData('jumlah', rawValue ? parseInt(rawValue, 10) : 0); // Store as integer
                                 }}
                                 placeholder="Masukkan jumlah"
                                 className="col-span-4"

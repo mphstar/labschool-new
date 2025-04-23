@@ -19,6 +19,7 @@ import { router } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
+import { RiResetLeftFill } from "react-icons/ri";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -65,7 +66,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-
                 Swal.fire({
                     title: 'Deleting...',
                     allowOutsideClick: false,
@@ -110,7 +110,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             <HeadTablePagination
                 table={table}
                 action={
-                    <div></div>
+                    <>
+                        <Select onValueChange={(value) => table.getColumn('jenis')?.setFilterValue(value == 'all' ? undefined : value)}>
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Jenis" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Semua</SelectItem>
+                                <SelectItem value="masuk">Pemasukan</SelectItem>
+                                <SelectItem value="keluar">Pengeluaran</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select onValueChange={(value) => table.getColumn('tipe_pembayaran')?.setFilterValue(value == 'all' ? undefined : value)}>
+                            <SelectTrigger className="w-full text-nowrap">
+                                <SelectValue placeholder="Tipe Pembayaran" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Semua</SelectItem>
+                                <SelectItem value="tunai">Tunai</SelectItem>
+                                <SelectItem value="transfer">Transfer</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        
+                    </>
                 }
             />
 

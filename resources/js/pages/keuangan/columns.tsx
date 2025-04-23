@@ -1,6 +1,7 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
 import { router } from '@inertiajs/react';
@@ -109,7 +110,7 @@ export const columns: ColumnDef<KeuanganType>[] = [
         header: 'Jenis',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
-            return <span className="">{value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</span>;
+            return <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>{value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</Badge>;
         },
     },
     {
@@ -117,7 +118,7 @@ export const columns: ColumnDef<KeuanganType>[] = [
         header: 'Tipe Pembayaran',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
-            return <span className="">{value === 'tunai' ? 'Tunai' : 'Transfer'}</span>;
+            return <Badge className={`${value == 'tunai' ? 'bg-slate-200 text-slate-800' : 'bg-cyan-200 text-cyan-800'}`}>{value === 'tunai' ? 'Tunai' : 'Transfer'}</Badge>;
         },
     },
     {
@@ -143,6 +144,9 @@ export const columns: ColumnDef<KeuanganType>[] = [
                     <DialogContent className="max-w-md sm:max-w-xl">
                         <DialogHeader>
                             <DialogTitle>Bukti Pembayaran</DialogTitle>
+                            <DialogDescription>
+                                Berikut adalah bukti pembayaran yang telah diunggah. Anda dapat memeriksa detailnya di bawah ini.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="flex w-full justify-center">
                             <img src={value} alt="Bukti Pembayaran" className="max-h-[400px] w-auto rounded border" />

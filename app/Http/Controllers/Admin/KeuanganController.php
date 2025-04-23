@@ -133,12 +133,13 @@ class KeuanganController extends Controller
 
     public function update(Request $request)
     {
+
         $request->validate([
             'id' => 'required|exists:keuangan,id',
             'keterangan' => 'required|string|max:255',
             'jenis' => 'required|in:masuk,keluar',
             'tipe_pembayaran' => 'required|in:tunai,transfer',
-            'bukti_pembayaran' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
+            'bukti_pembayaran' => $request->hasFile('bukti_pembayaran') ? 'image|mimes:jpeg,png,jpg,gif|max:4096' : 'nullable',
             'jumlah' => 'required|integer',
             'tanggal' => 'required|date',
         ], []);
