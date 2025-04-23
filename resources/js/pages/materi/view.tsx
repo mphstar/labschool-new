@@ -43,6 +43,7 @@ export default function Product() {
                             onClick={() => {
                                 store.setDialog('create');
                                 store.setOpen(true);
+                                store.setCurrentRow({})
                             }}
                             className="space-x-1"
                         >
