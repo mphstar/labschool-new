@@ -11,14 +11,14 @@ import Swal from 'sweetalert2';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type KeuanganType = {
+export type SuratType = {
     id: number;
-    keterangan: string;
+    nomor_surat: string;
+    perihal: string
     jenis: 'masuk' | 'keluar';
-    tipe_pembayaran: 'tunai' | 'transfer';
-    bukti_pembayaran: string | File;
-    jumlah: number | null;
-    tanggal: string;
+    pihak: string;
+    file_surat: string | File;
+    tanggal_surat: string;
     created_at: string;
 };
 
@@ -42,7 +42,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('keuangan.delete'),
+                route('surat.delete'),
                 {
                     id,
                 },
@@ -50,7 +50,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your keuangan has been deleted.',
+                            text: 'Your surat has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -70,7 +70,7 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<KeuanganType>[] = [
+export const columns: ColumnDef<SuratType>[] = [
     {
         id: 'select',
         header: ({ table }) => (
@@ -92,11 +92,11 @@ export const columns: ColumnDef<KeuanganType>[] = [
         cell: ({ row }) => row.index + 1,
     },
     {
-        accessorKey: 'keterangan',
+        accessorKey: 'nomor_surat',
         header: ({ column }) => {
             return (
                 <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Keterangan
+                    Nomor Surat
                     <ArrowUpDown className="ml-1 h-4 w-4" />
                 </Button>
             );
@@ -106,59 +106,47 @@ export const columns: ColumnDef<KeuanganType>[] = [
         },
     },
     {
+        accessorKey: 'perihal',
+        header: ({ column }) => {
+            return (
+                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    Perihal
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                </Button>
+            );
+        },
+        cell: ({ cell }) => {
+            return <span className="px-2">{cell.getValue<string>()}</span>;
+        },
+    },
+    {
+        accessorKey: 'pihak',
+        header: 'Pihak',
+    },
+    {
         accessorKey: 'jenis',
         header: 'Jenis',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
-            return <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>{value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</Badge>;
+            return <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>{value === 'masuk' ? 'Masuk' : 'Keluar'}</Badge>;
         },
     },
+    
     {
-        accessorKey: 'tipe_pembayaran',
-        header: 'Tipe Pembayaran',
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            return <Badge className={`${value == 'tunai' ? 'bg-slate-200 text-slate-800' : 'bg-cyan-200 text-cyan-800'}`}>{value === 'tunai' ? 'Tunai' : 'Transfer'}</Badge>;
-        },
-    },
-    {
-        accessorKey: 'jumlah',
-        header: 'Jumlah',
-        cell: ({ cell }) => {
-            const value = cell.getValue<number>();
-            return <span className="">Rp {value.toLocaleString('id-ID')}</span>;
-        },
-    },
-    {
-        accessorKey: 'bukti_pembayaran',
-        header: 'Bukti Pembayaran',
+        accessorKey: 'file_surat',
+        header: 'File Surat',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
             return (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="link" className="text-blue-500 hover:underline px-0">
-                            Lihat Bukti
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md sm:max-w-xl">
-                        <DialogHeader>
-                            <DialogTitle>Bukti Pembayaran</DialogTitle>
-                            <DialogDescription>
-                                Berikut adalah bukti pembayaran yang telah diunggah. Anda dapat memeriksa detailnya di bawah ini.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex w-full justify-center">
-                            <img src={value} alt="Bukti Pembayaran" className="max-h-[400px] w-auto rounded border" />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                    Lihat Bukti
+                </a>
             );
         },
     },
 
     {
-        accessorKey: 'tanggal',
+        accessorKey: 'tanggal_surat',
         header: 'Tanggal',
         cell: ({ cell }) => {
             const date = new Date(cell.getValue<string>());

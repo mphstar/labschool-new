@@ -41,7 +41,7 @@ const reportNavItems: NavItem[] = [
     },
     {
         title: 'Surat',
-        url: '#',
+        url: '/surat',
         icon: PackageSearch,
     },
     {

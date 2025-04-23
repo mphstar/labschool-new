@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
+use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -72,6 +73,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [KeuanganController::class, 'deleteMultiple'])->name('keuangan.delete-multiple');
         Route::post('delete', [KeuanganController::class, 'delete'])->name('keuangan.delete');
         Route::post('update', [KeuanganController::class, 'update'])->name('keuangan.update');
+    });
+
+    Route::prefix('surat')->group(function () {
+        Route::get('/', [SuratController::class, 'index'])->name('surat.index');
+        Route::post('store', [SuratController::class, 'store'])->name('surat.store');
+        Route::post('delete-multiple', [SuratController::class, 'deleteMultiple'])->name('surat.delete-multiple');
+        Route::post('delete', [SuratController::class, 'delete'])->name('surat.delete');
+        Route::post('update', [SuratController::class, 'update'])->name('surat.update');
     });
 
     

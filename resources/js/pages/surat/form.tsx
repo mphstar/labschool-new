@@ -15,23 +15,23 @@ const FormDialog = () => {
 
     const { data, setData, post, processing, errors, reset } = useForm({
         id: context.currentRow?.id ?? 0,
-        keterangan: context.currentRow?.keterangan ?? '',
+        nomor_surat: context.currentRow?.nomor_surat ?? '',
+        perihal: context.currentRow?.perihal ?? '',
+        pihak: context.currentRow?.pihak ?? '',
         jenis: context.currentRow?.jenis ?? 'masuk',
-        tipe_pembayaran: context.currentRow?.tipe_pembayaran ?? 'tunai',
-        bukti_pembayaran: context.currentRow?.bukti_pembayaran ?? undefined,
-        jumlah: context.currentRow?.jumlah ?? 0,
-        tanggal: context.currentRow?.tanggal ?? '',
+        file_surat: context.currentRow?.file_surat ?? undefined,
+        tanggal_surat: context.currentRow?.tanggal_surat ?? '',
     });
 
     useEffect(() => {
         if (context.currentRow && context.dialog == 'update') {
             setData('id', context.currentRow.id);
-            setData('keterangan', context.currentRow.keterangan);
             setData('jenis', context.currentRow.jenis);
-            setData('tipe_pembayaran', context.currentRow.tipe_pembayaran);
-            setData('bukti_pembayaran', context.currentRow.bukti_pembayaran);
-            setData('jumlah', context.currentRow.jumlah);
-            setData('tanggal', context.currentRow.tanggal);
+            setData('nomor_surat', context.currentRow?.nomor_surat);
+            setData('perihal', context.currentRow.perihal);
+            setData('pihak', context.currentRow.pihak);
+            setData('file_surat', context.currentRow.file_surat);
+            setData('tanggal_surat', context.currentRow.tanggal_surat);
         }
     }, [context.currentRow]);
 
@@ -39,14 +39,14 @@ const FormDialog = () => {
         e.preventDefault();
 
         if (context.dialog == 'create') {
-            post(route('keuangan.store'), {
+            post(route('surat.store'), {
                 onSuccess: () => {
                     reset();
                     context.setOpen(false);
 
                     toast({
                         title: 'Success',
-                        description: 'Keuangan created successfully',
+                        description: 'Surat created successfully',
                     });
                 },
                 onError: (errors) => {
@@ -57,14 +57,14 @@ const FormDialog = () => {
                 },
             });
         } else {
-            post(route('keuangan.update'), {
+            post(route('surat.update'), {
                 onSuccess: () => {
                     reset();
                     context.setOpen(false);
 
                     toast({
                         title: 'Success',
-                        description: 'Keuangan updated successfully',
+                        description: 'Surat updated successfully',
                     });
                 },
                 onError: (errors) => {
@@ -87,64 +87,78 @@ const FormDialog = () => {
         >
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader className="text-left">
-                    <DialogTitle>{`${context.dialog == 'create' ? 'Add' : 'Update'} New Keuangan`}</DialogTitle>
+                    <DialogTitle>{`${context.dialog == 'create' ? 'Add' : 'Update'} New Surat`}</DialogTitle>
                     <DialogDescription>
-                        {`${context.dialog == 'create' ? 'Create new' : 'Update'} Keuangan here. `}
+                        {`${context.dialog == 'create' ? 'Create new' : 'Update'} Surat here. `}
                         Click save when you&apos;re done.
                     </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="-mr-4 h-[26.25rem] w-full py-1 pr-4">
                     <form id="user-form" onSubmit={onSubmit} className="space-y-4 p-0.5">
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Keterangan</Label>
-                            <Input
-                                value={data.keterangan}
-                                onChange={(e) => {
-                                    setData('keterangan', e.target.value);
-                                }}
-                                placeholder="Masukkan keterangan"
-                                className="col-span-4"
-                                autoComplete="off"
-                            />
-                            <InputError message={errors.keterangan} className="col-span-4 col-start-3 mt-2" />
+                            <Label className="col-span-2 text-right">Nomor Surat</Label>
+
+                            <div className="col-span-4 flex items-center gap-2">
+                                <Input
+                                    value={data.nomor_surat}
+                                    onChange={(e) => {
+                                        setData('nomor_surat', e.target.value);
+                                    }}
+                                    placeholder="1/UN25.1.5/SDL/2025"
+                                    className="flex-1"
+                                    autoComplete="off"
+                                />
+                                <Button
+                                    type="button"
+                                    onClick={() => {
+                                        const today = new Date();
+                                        const bulan = today.getMonth() + 1;
+                                        const tahun = today.getFullYear();
+                                        const autoNomor = `1/UN25.1.5/SDL/${tahun}`;
+                                        setData('nomor_surat', autoNomor);
+                                    }}
+                                    className=""
+                                >
+                                    Auto
+                                </Button>
+                            </div>
+
+                            <InputError message={errors.nomor_surat} className="col-span-4 col-start-3 mt-2" />
                         </div>
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Tanggal</Label>
+                            <Label className="col-span-2 text-right">Perihal</Label>
                             <Input
-                                type="date"
-                                value={data.tanggal}
+                                value={data.perihal}
                                 onChange={(e) => {
-                                    setData('tanggal', e.target.value);
+                                    setData('perihal', e.target.value);
                                 }}
-                                placeholder="Masukkan tanggal"
+                                placeholder="Masukkan Perihal"
                                 className="col-span-4"
                                 autoComplete="off"
                             />
-                            <InputError message={errors.tanggal} className="col-span-4 col-start-3 mt-2" />
+                            <InputError message={errors.perihal} className="col-span-4 col-start-3 mt-2" />
                         </div>
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Jumlah</Label>
+                            <Label className="col-span-2 text-right">Pihak</Label>
                             <Input
-                                type="text"
-                                value={data.jumlah ? data.jumlah.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''} // Format for display
+                                value={data.pihak}
                                 onChange={(e) => {
-                                    const rawValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                    setData('jumlah', rawValue ? parseInt(rawValue, 10) : 0); // Store as integer
+                                    setData('pihak', e.target.value);
                                 }}
-                                placeholder="Masukkan jumlah"
+                                placeholder="Pengirim atau penerima"
                                 className="col-span-4"
                                 autoComplete="off"
                             />
-                            <InputError message={errors.jumlah} className="col-span-4 col-start-3 mt-2" />
+                            <InputError message={errors.pihak} className="col-span-4 col-start-3 mt-2" />
                         </div>
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Jenis</Label>
+                            <Label className="col-span-2 text-right">Jenis Surat</Label>
                             <Select value={data.jenis} onValueChange={(value) => setData('jenis', value)}>
                                 <SelectTrigger className="col-span-4">
-                                    <SelectValue placeholder="" />
+                                    <SelectValue placeholder="Pilih Jenis Surat" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -158,36 +172,34 @@ const FormDialog = () => {
                         </div>
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Tipe Pembayaran</Label>
-                            <Select value={data.tipe_pembayaran} onValueChange={(value) => setData('tipe_pembayaran', value)}>
-                                <SelectTrigger className="col-span-4">
-                                    <SelectValue placeholder="" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Tipe Pembayaran</SelectLabel>
-                                        <SelectItem value="tunai">Tunai</SelectItem>
-                                        <SelectItem value="transfer">Transfer</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={errors.tipe_pembayaran} className="col-span-4 col-start-3 mt-2" />
+                            <Label className="col-span-2 text-right">Tanggal</Label>
+                            <Input
+                                type="date"
+                                value={data.tanggal_surat}
+                                onChange={(e) => {
+                                    setData('tanggal_surat', e.target.value);
+                                }}
+                                placeholder="Masukkan tanggal"
+                                className="col-span-4"
+                                autoComplete="off"
+                            />
+                            <InputError message={errors.tanggal_surat} className="col-span-4 col-start-3 mt-2" />
                         </div>
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Bukti Pembayaran</Label>
+                            <Label className="col-span-2 text-right">File Surat</Label>
                             <Input
                                 type="file"
-                                accept="image/*"
+                                accept=".pdf,.doc,.docx"
                                 onChange={(e) => {
                                     if (e.target.files && e.target.files[0]) {
-                                        setData('bukti_pembayaran', e.target.files[0]);
+                                        setData('file_surat', e.target.files[0]);
                                     }
                                 }}
-                                placeholder="Masukkan bukti pembayaran"
+                                placeholder="Masukkan file surat"
                                 className="col-span-4"
                             />
-                            <InputError message={errors.bukti_pembayaran} className="col-span-4 col-start-3 mt-2" />
+                            <InputError message={errors.file_surat} className="col-span-4 col-start-3 mt-2" />
                         </div>
                     </form>
                 </ScrollArea>

@@ -3,19 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Keuangan;
+use App\Models\Surat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
-class KeuanganController extends Controller
+class SuratController extends Controller
 {
+
+    
     public function index()
     {
-        $data = Keuangan::latest()->get();
+        $data = Surat::latest()->get();
 
-        return Inertia::render('keuangan/view', [
+        return Inertia::render('surat/view', [
             'data' => $data,
         ]);
     }
@@ -23,27 +25,29 @@ class KeuanganController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'keterangan' => 'required|string|max:255',
+            'nomor_surat' => 'required|string|max:255',
             'jenis' => 'required|in:masuk,keluar',
-            'tipe_pembayaran' => 'required|in:tunai,transfer',
-            'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
-            'jumlah' => 'required|integer',
-            'tanggal' => 'required|date',
+            'perihal' => 'required|string|max:255',
+            'pihak' => 'required|string|max:255',
+            'file_surat' => 'required|file|mimes:pdf,doc,docx|max:4096',
+            'tanggal_surat' => 'required|date',
         ], []);
 
         DB::beginTransaction();
 
         try {
-            $data = new Keuangan();
-            $data->keterangan = $request->keterangan;
+            $data = new Surat();
+            $data->nomor_surat = $request->nomor_surat;
             $data->jenis = $request->jenis;
-            $data->tipe_pembayaran = $request->tipe_pembayaran;
-            $data->jumlah = $request->jumlah;
-            $data->tanggal = $request->tanggal;
+            $data->perihal = $request->perihal;
+            $data->pihak = $request->pihak;
+            $data->tanggal_surat = $request->tanggal_surat;
 
-            $file = $request->file('bukti_pembayaran');
+
+
+            $file = $request->file('file_surat');
             // Pastikan folder tujuan ada
-            $tujuan = public_path('uploads/bukti_pembayaran');
+            $tujuan = public_path('uploads/file_surat');
             if (!file_exists($tujuan)) {
                 mkdir($tujuan, 0755, true);
             }
@@ -51,17 +55,17 @@ class KeuanganController extends Controller
             // Generate nama file dengan timestamp
             $namaFile = now()->format('Ymd_His') . '.' . $file->getClientOriginalExtension();
 
-            // Pindahkan file ke folder public/bukti_pembayaran
+            // Pindahkan file ke folder public/file_surat
             $file->move($tujuan, $namaFile);
 
             // Simpan path relatif ke database
-            $data->bukti_pembayaran = 'uploads/bukti_pembayaran/' . $namaFile;
+            $data->file_surat = 'uploads/file_surat/' . $namaFile;
 
             $data->save();
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Keuangan created successfully');
+            return redirect()->back()->with('success', 'Surat created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             throw ValidationException::withMessages([
@@ -80,10 +84,10 @@ class KeuanganController extends Controller
 
         try {
             foreach ($request->data as $res) {
-                $data = Keuangan::find($res['id']);
+                $data = Surat::find($res['id']);
                 if ($data) {
-                    if ($data->bukti_pembayaran) {
-                        $path = public_path($data->bukti_pembayaran);
+                    if ($data->file_surat) {
+                        $path = public_path($data->file_surat);
                         if (file_exists($path)) {
                             unlink($path);
                         }
@@ -93,7 +97,7 @@ class KeuanganController extends Controller
                 }
             }
             DB::commit();
-            return redirect()->back()->with('success', 'Keuangan deleted successfully');
+            return redirect()->back()->with('success', 'Surat deleted successfully');
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
@@ -109,9 +113,9 @@ class KeuanganController extends Controller
         DB::beginTransaction();
 
         try {
-            $data = Keuangan::findOrFail($request->id);
-            if ($data->bukti_pembayaran) {
-                $path = public_path($data->bukti_pembayaran);
+            $data = Surat::findOrFail($request->id);
+            if ($data->file_surat) {
+                $path = public_path($data->file_surat);
                 if (file_exists($path)) {
                     unlink($path);
                 }
@@ -122,7 +126,7 @@ class KeuanganController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Keuangan deleted successfully');
+            return redirect()->back()->with('success', 'Surat deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             throw ValidationException::withMessages([
@@ -135,46 +139,47 @@ class KeuanganController extends Controller
     {
 
         $request->validate([
-            'id' => 'required|exists:keuangan,id',
-            'keterangan' => 'required|string|max:255',
+            'id' => 'required|exists:surat,id',
+            'nomor_surat' => 'required|string|max:255',
             'jenis' => 'required|in:masuk,keluar',
-            'tipe_pembayaran' => 'required|in:tunai,transfer',
-            'bukti_pembayaran' => $request->hasFile('bukti_pembayaran') ? 'image|mimes:jpeg,png,jpg,gif|max:4096' : 'nullable',
-            'jumlah' => 'required|integer',
-            'tanggal' => 'required|date',
+            'perihal' => 'required|string|max:255',
+            'pihak' => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
+            'file_surat' => $request->hasFile('file_surat') ? 'file|mimes:pdf,doc,docx|max:4096' : 'nullable',
         ], []);
 
         DB::beginTransaction();
 
         try {
-            $data = Keuangan::findOrFail($request->id);
-            $data->keterangan = $request->keterangan;
+            $data = Surat::findOrFail($request->id);
+            $data->nomor_surat = $request->nomor_surat;
             $data->jenis = $request->jenis;
-            $data->tipe_pembayaran = $request->tipe_pembayaran;
-            $data->jumlah = $request->jumlah;
-            $data->tanggal = $request->tanggal;
+            $data->perihal = $request->perihal;
+            $data->pihak = $request->pihak;
+            $data->tanggal_surat = $request->tanggal_surat;
 
-            if ($request->hasFile('bukti_pembayaran')) {
-                if ($data->bukti_pembayaran) {
-                    $path = public_path($data->bukti_pembayaran);
+
+            if ($request->hasFile('file_surat')) {
+                if ($data->file_surat) {
+                    $path = public_path($data->file_surat);
                     if (file_exists($path)) {
                         unlink($path);
                     }
                 }
 
-                $file = $request->file('bukti_pembayaran');
+                $file = $request->file('file_surat');
                 // Pastikan folder tujuan ada
-                $tujuan = public_path('uploads/bukti_pembayaran');
+                $tujuan = public_path('uploads/file_surat');
                 if (!file_exists($tujuan)) {
                     mkdir($tujuan, 0755, true);
                 }
 
                 // Generate nama file dengan timestamp
                 $namaFile = now()->format('Ymd_His') . '.' . $file->getClientOriginalExtension();
-                // Pindahkan file ke folder public/bukti_pembayaran
+                // Pindahkan file ke folder public/file_surat
                 $file->move($tujuan, $namaFile);
                 // Simpan path relatif ke database
-                $data->bukti_pembayaran = 'uploads/bukti_pembayaran/' . $namaFile;
+                $data->file_surat = 'uploads/file_surat/' . $namaFile;
             }
 
 
@@ -182,9 +187,10 @@ class KeuanganController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Keuangan updated successfully');
+            return redirect()->back()->with('success', 'Surat updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             throw ValidationException::withMessages([
                 'error' => 'Internal Server Error',
             ]);

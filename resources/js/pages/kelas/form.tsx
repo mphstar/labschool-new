@@ -18,7 +18,7 @@ const FormDialog = () => {
     });
 
     useEffect(() => {
-        if (context.currentRow) {
+        if (context.currentRow && context.dialog == 'update') {
             setData('id', context.currentRow.id);
             setData('name', context.currentRow.name);
         }
