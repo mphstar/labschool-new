@@ -86,9 +86,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('siswa')->group(function () {
         Route::get('/', [SiswaController::class, 'index'])->name('siswa.index');
+        Route::get('/create', [SiswaController::class, 'create'])->name('siswa.create');
         Route::post('store', [SiswaController::class, 'store'])->name('siswa.store');
         Route::post('delete-multiple', [SiswaController::class, 'deleteMultiple'])->name('siswa.delete-multiple');
         Route::post('delete', [SiswaController::class, 'delete'])->name('siswa.delete');
+        Route::get('/{id}/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
         Route::post('update', [SiswaController::class, 'update'])->name('siswa.update');
     });
 

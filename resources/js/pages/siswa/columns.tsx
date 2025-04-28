@@ -1,8 +1,9 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -11,24 +12,36 @@ import Swal from 'sweetalert2';
 // You can use a Zod schema here if you want.
 export type SiswaType = {
     id: number;
+
     nis: string;
     nisn: string;
     nama_lengkap: string;
     nama_panggilan: string;
     tempat_lahir: string;
+    tanggal_lahir: string;
     jenis_kelamin: 'L' | 'P';
-    agama: 'Islam' | 'Kristen' | 'Khatolik' | 'Hindu' | 'Buddha' | 'Khonghucu';
+    agama: 'Islam' | 'Kristen' | 'Hindu' | 'Buddha' | 'Khonghucu' | 'Khatolik';
     alamat: string;
-    no_telepon?: string;
-    pendidikan_sebelumnya?: string;
-    pilihan_seni?: '-' | 'Seni Musik' | 'Seni Tari' | 'Seni Rupa' | 'Seni Teater' | 'Seni Media';
+    no_telepon: string;
+    pendidikan_sebelumnya: string;
+    pilihan_seni?: string;
 
+    // informasi orang tua
     nama_ayah?: string;
     nama_ibu?: string;
     pekerjaan_ayah?: string;
     pekerjaan_ibu?: string;
+    jalan?: string;
+    kelurahan?: string;
+    kecamatan?: string;
+    kabupaten?: string;
+    provinsi?: string;
 
-    jalan: string;
+    // informasi wali
+    nama_wali?: string;
+    pekerjaan_wali?: string;
+    alamat_wali?: string;
+    no_telepon_wali?: string;
 
     created_at: string;
 };
@@ -102,7 +115,35 @@ export const columns: ColumnDef<SiswaType>[] = [
         header: '#',
         cell: ({ row }) => row.index + 1,
     },
-    
+    {
+        accessorKey: 'nis',
+        header: ({ column }) => {
+            return (
+                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    NIS
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                </Button>
+            );
+        },
+        cell: ({ cell }) => {
+            return <span className="px-2">{cell.getValue<string>()}</span>;
+        },
+    },
+    {
+        accessorKey: 'nisn',
+        header: ({ column }) => {
+            return (
+                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    NISN
+                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                </Button>
+            );
+        },
+        cell: ({ cell }) => {
+            return <span className="px-2">{cell.getValue<string>()}</span>;
+        },
+    },
+
     {
         accessorKey: 'nama_lengkap',
         header: ({ column }) => {
@@ -117,7 +158,56 @@ export const columns: ColumnDef<SiswaType>[] = [
             return <span className="px-2">{cell.getValue<string>()}</span>;
         },
     },
-    
+
+    {
+        accessorKey: 'nama_panggilan',
+        header: 'Nama Panggilan',
+    },
+    {
+        accessorKey: 'tempat_lahir',
+        header: 'Tempat Lahir',
+    },
+    {
+        accessorKey: 'tanggal_lahir',
+        header: 'Tanggal Lahir',
+        cell: ({ cell }) => {
+            const date = new Date(cell.getValue<string>());
+            return <span>{date.toLocaleDateString('id-ID')}</span>;
+        },
+    },
+    {
+        accessorKey: 'jenis_kelamin',
+        header: 'Jenis Kelamin',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <span>{value === 'L' ? 'Laki-laki' : 'Perempuan'}</span>;
+        },
+    },
+    {
+        accessorKey: 'agama',
+        header: 'Agama',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <Badge className="bg-primary text-primary-foreground">{value}</Badge>;
+        },
+    },
+    {
+        accessorKey: 'alamat',
+        header: 'Alamat',
+    },
+    {
+        accessorKey: 'no_telepon',
+        header: 'No Telepon',
+    },
+    {
+        accessorKey: 'pendidikan_sebelumnya',
+        header: 'Pendidikan Sebelumnya',
+    },
+    {
+        accessorKey: 'pilihan_seni',
+        header: 'Pilihan Seni',
+    },
+
     {
         accessorKey: 'created_at',
         header: 'Created At',
@@ -144,15 +234,9 @@ export const columns: ColumnDef<SiswaType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
-                        <DropdownMenuItem
-                            onClick={() => {
-                                store.setCurrentRow(payment);
-                                store.setDialog('update');
-                                store.setOpen(true);
-                            }}
-                        >
-                            Edit Data
-                        </DropdownMenuItem>
+                        <Link href={`/siswa/${payment.id}/edit`}>
+                            <DropdownMenuItem>Edit Data</DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem
                             onClick={() => {
                                 onDelete(payment.id);
