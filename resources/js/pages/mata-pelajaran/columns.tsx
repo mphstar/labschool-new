@@ -126,7 +126,11 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
         },
     },
     {
-        accessorKey: 'kelas.name',
+        id: 'kelas',
+        accessorFn: (row) => row.kelas.name,
+        filterFn: (row, id, value) => {
+            return row.original.kelas.id == value
+        },
         header: 'Kelas',
         cell: ({ cell }) => {
             return <span className="px-2">{cell.getValue<string>()}</span>;

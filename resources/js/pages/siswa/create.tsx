@@ -9,10 +9,11 @@ import { toast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
+import { KelasType } from '../kelas/columns';
 import { SiswaType } from './columns';
 
 export default function Page() {
-    const { siswa } = usePage().props as unknown as { siswa: SiswaType };
+    const { siswa, kelas } = usePage().props as unknown as { siswa: SiswaType; kelas: KelasType[] };
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -26,6 +27,7 @@ export default function Page() {
     ];
 
     const { data, setData, post, processing, errors, reset } = useForm({
+        kelas_id: undefined as number | undefined,
         id: siswa?.id ?? 0,
         nis: siswa?.nis ?? '',
         nisn: siswa?.nisn ?? '',
@@ -108,6 +110,31 @@ export default function Page() {
                 </div>
 
                 <form id="user-form" onSubmit={onSubmit} className="grid grid-cols-1 space-y-4 space-x-4 p-0.5 sm:grid-cols-2 md:grid-cols-3">
+                    {!siswa && (
+                        <div className="flex flex-col gap-y-3">
+                            <Label className="required">Pilih Kelas</Label>
+                            <Select value={data.kelas_id?.toString()} onValueChange={(value) => setData('kelas_id', parseInt(value))}>
+                                <SelectTrigger className="col-span-4">
+                                    <SelectValue placeholder="Pilih Kelas" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Pilih Kelas</SelectLabel>
+                                        {kelas.map((it) => (
+                                            <SelectItem key={it.id} value={it.id.toString()}>
+                                                {it.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.kelas_id} className="" />
+                        </div>
+                    )}
+
+                    <h1 className="col-span-full mt-3 font-semibold">Informasi Siswa</h1>
+                    <Separator className="col-span-full my-1 mb-6" />
+
                     <div className="flex flex-col gap-y-3">
                         <Label className="required">NIS</Label>
                         <Input
@@ -197,14 +224,18 @@ export default function Page() {
 
                     <div className="flex flex-col gap-y-3">
                         <Label className="required">Jenis Kelamin</Label>
-                        <RadioGroup defaultValue="L" className="flex gap-x-2">
+                        <RadioGroup
+                            value={data.jenis_kelamin}
+                            onValueChange={(e) => setData('jenis_kelamin', e as 'L' | 'P')}
+                            className="flex gap-x-2"
+                        >
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="L" id="L" />
-                                <Label htmlFor="option-one">Laki-laki</Label>
+                                <Label htmlFor="L">Laki-laki</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="option-two" id="option-two" />
-                                <Label htmlFor="option-two">Perempuan</Label>
+                                <RadioGroupItem value="P" id="P" />
+                                <Label htmlFor="P">Perempuan</Label>
                             </div>
                         </RadioGroup>
 

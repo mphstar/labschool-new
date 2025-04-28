@@ -7,11 +7,18 @@ import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { KelasType } from '../kelas/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
+type RiwayatKelasType = {
+    kelas: KelasType;
+};
+
 export type SiswaType = {
     id: number;
+
+    kelas_aktif: RiwayatKelasType;
 
     nis: string;
     nisn: string;
@@ -168,6 +175,18 @@ export const columns: ColumnDef<SiswaType>[] = [
         header: 'Tempat Lahir',
     },
     {
+        id: 'kelas',
+        accessorFn: (row) => row.kelas_aktif.kelas.name,
+        filterFn: (row, id, value) => {
+            return row.original.kelas_aktif.kelas.id == value;
+        },
+        header: 'Kelas',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <Badge className="bg-primary text-primary-foreground">{value}</Badge>;
+        },
+    },
+    {
         accessorKey: 'tanggal_lahir',
         header: 'Tanggal Lahir',
         cell: ({ cell }) => {
@@ -234,6 +253,16 @@ export const columns: ColumnDef<SiswaType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
+                        <DropdownMenuItem>Ubah Kelas</DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                store.setCurrentRow(payment);
+                                store.setOpen(true);
+                            }}
+                        >
+                            Lihat QRCode
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Data Nilai</DropdownMenuItem>
                         <Link href={`/siswa/${payment.id}/edit`}>
                             <DropdownMenuItem>Edit Data</DropdownMenuItem>
                         </Link>

@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mata_pelajaran', function (Blueprint $table) {
+        Schema::create('nilai', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('kategori', ['wajib', 'ekskul'])->default('wajib');
-            $table->foreignId('kelas_id')->constrained('kelas')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('riwayat_kelas_id')->constrained('riwayat_kelas')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mata_pelajaran');
+        Schema::dropIfExists('nilai');
     }
 };

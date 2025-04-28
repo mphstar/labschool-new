@@ -19,7 +19,6 @@ import { router } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { RiResetLeftFill } from "react-icons/ri";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -121,15 +120,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 <SelectItem value="keluar">Keluar</SelectItem>
                             </SelectContent>
                         </Select>
-                        
-                        
                     </>
                 }
             />
 
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                <div className="my-4 flex items-center justify-between rounded-md border border-green-200 bg-green-50 px-4 py-2">
-                    <span className="text-sm font-semibold text-green-700">{`Selected ${table.getFilteredSelectedRowModel().rows.length} Data`}</span>
+                <div className="border-primary/10 bg-primary/10 my-4 flex items-center justify-between rounded-md border px-4 py-2">
+                    <span className="text-primary text-sm font-semibold">{`${table.getFilteredSelectedRowModel().rows.length} Data Dipilih`}</span>
 
                     <Button
                         variant="destructive"

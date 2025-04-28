@@ -15,10 +15,11 @@ import { HeadTablePagination } from '@/components/ui/head-table';
 import { DataTablePagination } from '@/components/ui/pagination-control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
+import { KelasType } from '../kelas/columns';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -104,12 +105,27 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         });
     };
 
+    const { kelas } = usePage().props as unknown as { kelas: KelasType[] };
+
     return (
         <div className="">
             <HeadTablePagination
                 table={table}
                 action={
                     <>
+                        <Select onValueChange={(value) => table.getColumn('kelas')?.setFilterValue(value == 'all' ? undefined : value)}>
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Pilih Kelas" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Semua</SelectItem>
+                                {kelas.map((item) => (
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                        {item.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                         <Select onValueChange={(value) => table.getColumn('jenis_kelamin')?.setFilterValue(value == 'all' ? undefined : value)}>
                             <SelectTrigger className="">
                                 <SelectValue placeholder="Jenis Kelamin" />
@@ -126,7 +142,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
                 <div className="border-primary/10 bg-primary/10 my-4 flex items-center justify-between rounded-md border px-4 py-2">
-                    <span className="text-primary text-sm font-semibold">{`Selected ${table.getFilteredSelectedRowModel().rows.length} Data`}</span>
+                    <span className="text-primary text-sm font-semibold">{`${table.getFilteredSelectedRowModel().rows.length} Data Dipilih`}</span>
 
                     <Button
                         variant="destructive"

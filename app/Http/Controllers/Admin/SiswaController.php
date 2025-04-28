@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,16 +14,21 @@ class SiswaController extends Controller
 {
     public function index()
     {
-        $data = Siswa::latest()->get();
+        $data = Siswa::with(['kelas_aktif.kelas'])->latest()->get();
+        $kelas = Kelas::get();
 
         return Inertia::render('siswa/view', [
             'data' => $data,
+            'kelas' => $kelas,
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('siswa/create');
+        $kelas = Kelas::get();
+        return Inertia::render('siswa/create', [
+            'kelas' => $kelas,
+        ]);
     }
 
     public function edit($id)
@@ -37,6 +43,7 @@ class SiswaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
             'nis' => 'required|string|max:20',
             'nisn' => 'required|string|max:20',
             'nama_lengkap' => 'required|string|max:255',
@@ -66,12 +73,20 @@ class SiswaController extends Controller
             'pekerjaan_wali' => 'nullable|string|max:100',
             'alamat_wali' => 'nullable|string|max:255',
             'no_telepon_wali' => 'nullable|string|max:15',
+        ], [
+            'kelas_id.required' => 'Kelas harus dipilih',
         ]);
 
         DB::beginTransaction();
 
         try {
-            Siswa::create($request->all());
+            $req = $request->except('kelas_id');
+
+            $siswa = Siswa::create($req);
+            $siswa->riwayat_kelas()->create([
+                'kelas_id' => $request->kelas_id,
+                'status' => 'aktif',
+            ]);
 
             DB::commit();
 

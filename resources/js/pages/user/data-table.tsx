@@ -65,7 +65,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-
                 Swal.fire({
                     title: 'Deleting...',
                     allowOutsideClick: false,
@@ -124,8 +123,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             />
 
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                <div className="my-4 flex items-center justify-between rounded-md border border-green-200 bg-green-50 px-4 py-2">
-                    <span className="text-sm font-semibold text-green-700">{`Selected ${table.getFilteredSelectedRowModel().rows.length} Data`}</span>
+                <div className="border-primary/10 bg-primary/10 my-4 flex items-center justify-between rounded-md border px-4 py-2">
+                    <span className="text-primary text-sm font-semibold">{`${table.getFilteredSelectedRowModel().rows.length} Data Dipilih`}</span>
 
                     <Button
                         variant="destructive"
