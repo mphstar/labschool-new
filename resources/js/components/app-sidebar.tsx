@@ -31,6 +31,11 @@ const masterNavItems: NavItem[] = [
         url: '/mata-pelajaran',
         icon: PackageSearch,
     },
+    {
+        title: 'Siswa',
+        url: '/siswa',
+        icon: Folder,
+    },
 ];
 
 const reportNavItems: NavItem[] = [

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
+use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
@@ -81,6 +82,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [SuratController::class, 'deleteMultiple'])->name('surat.delete-multiple');
         Route::post('delete', [SuratController::class, 'delete'])->name('surat.delete');
         Route::post('update', [SuratController::class, 'update'])->name('surat.update');
+    });
+
+    Route::prefix('siswa')->group(function () {
+        Route::get('/', [SiswaController::class, 'index'])->name('siswa.index');
+        Route::post('store', [SiswaController::class, 'store'])->name('siswa.store');
+        Route::post('delete-multiple', [SiswaController::class, 'deleteMultiple'])->name('siswa.delete-multiple');
+        Route::post('delete', [SiswaController::class, 'delete'])->name('siswa.delete');
+        Route::post('update', [SiswaController::class, 'update'])->name('siswa.update');
     });
 
     
