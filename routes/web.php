@@ -92,6 +92,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete', [SiswaController::class, 'delete'])->name('siswa.delete');
         Route::get('/{id}/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
         Route::post('update', [SiswaController::class, 'update'])->name('siswa.update');
+
+        Route::post('/ubah-kelas', [SiswaController::class, 'ubahKelas'])->name('siswa.ubah-kelas');
     });
 
     

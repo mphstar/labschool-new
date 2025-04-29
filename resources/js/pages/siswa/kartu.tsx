@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import useProductStore from '@/stores/useProduct';
+import useSiswaStore from '@/stores/useSiswa';
 
 import html2canvas from 'html2canvas-pro';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRef } from 'react';
 
 const DialogKartu = () => {
-    const context = useProductStore();
+    const context = useSiswaStore();
     const qrCodeRef = useRef(null);
 
     const handleDownloadQRCode = () => {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\RiwayatKelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +39,52 @@ class SiswaController extends Controller
         return Inertia::render('siswa/create', [
             'siswa' => $data,
         ]);
+    }
+
+    public function ubahKelas(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswa,id',
+            'kelas_id' => 'required|exists:kelas,id',
+            'riwayat_kelas_id' => 'required|exists:riwayat_kelas,id',
+            'status' => 'required|in:selesai,ulang',
+
+            'kelas_selanjutnya' => 'nullable|exists:kelas,id',
+        ], []);
+
+        DB::beginTransaction();
+
+        try {
+
+            $kelasNow = RiwayatKelas::findOrFail($request->riwayat_kelas_id);
+            $kelasNow->update([
+                'status' => $request->status,
+            ]);
+
+            if ($request->status == 'selesai') {
+                $kelasNext = RiwayatKelas::create([
+                    'siswa_id' => $request->siswa_id,
+                    'kelas_id' => $request->kelas_selanjutnya,
+                    'status' => 'aktif',
+                ]);
+            } else {
+                $kelasNext = RiwayatKelas::create([
+                    'siswa_id' => $request->siswa_id,
+                    'kelas_id' => $request->kelas_id,
+                    'status' => 'aktif',
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Kelas siswa berhasil diubah');
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+
+            throw ValidationException::class::withMessages([
+                'error' => 'Internal Server Error',
+            ]);
+        }
     }
 
     public function store(Request $request)

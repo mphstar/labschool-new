@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import useProductStore from '@/stores/useProduct';
+import useSiswaStore from '@/stores/useSiswa';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { SiswaType, columns } from './columns';
 import { DataTable } from './data-table';
-import { log } from 'node:console';
 import DialogKartu from './kartu';
+import UbahKelas from './ubah-kelas';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,14 +17,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Product() {
-    const store = useProductStore();
     const { data } = usePage().props as unknown as { data: SiswaType[] };
-    
+    const store = useSiswaStore();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Siswa" />
-            <DialogKartu />
+            {store.dialog == 'qrcode' && <DialogKartu />}
+            {store.dialog == 'ubah_kelas' && <UbahKelas />}
             <div className="flex h-full w-full flex-col gap-4 rounded-xl p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
                     <div>

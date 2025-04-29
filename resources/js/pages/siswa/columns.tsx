@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import useProductStore from '@/stores/useProduct';
+import useSiswaStore from '@/stores/useSiswa';
 import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
@@ -239,7 +239,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         id: 'actions',
         cell: ({ row }) => {
             const payment = row.original;
-            const store = useProductStore();
+            const store = useSiswaStore();
 
             return (
                 <DropdownMenu>
@@ -253,10 +253,19 @@ export const columns: ColumnDef<SiswaType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
-                        <DropdownMenuItem>Ubah Kelas</DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
+                                store.setDialog('ubah_kelas');
+                                store.setOpen(true);
+                            }}
+                        >
+                            Ubah Kelas
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                store.setCurrentRow(payment);
+                                store.setDialog('qrcode');
                                 store.setOpen(true);
                             }}
                         >
