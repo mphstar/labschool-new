@@ -1,8 +1,8 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import useProductStore from '@/stores/useProduct';
-import { Link, router } from '@inertiajs/react';
+import useNilaiStore from '@/stores/useNilai';
+import { router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -10,11 +10,45 @@ import { KelasType } from '../kelas/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type MataPelajaranType = {
-    id: number;
-    name: string;
-    kategori: 'wajib' | 'pilihan';
+type RiwayatKelasType = {
     kelas: KelasType;
+};
+
+export type SiswaType = {
+    id: number;
+
+    kelas_aktif: RiwayatKelasType;
+
+    nis: string;
+    nisn: string;
+    nama_lengkap: string;
+    nama_panggilan: string;
+    tempat_lahir: string;
+    tanggal_lahir: string;
+    jenis_kelamin: 'L' | 'P';
+    agama: 'Islam' | 'Kristen' | 'Hindu' | 'Buddha' | 'Khonghucu' | 'Khatolik';
+    alamat: string;
+    no_telepon: string;
+    pendidikan_sebelumnya: string;
+    pilihan_seni?: string;
+
+    // informasi orang tua
+    nama_ayah?: string;
+    nama_ibu?: string;
+    pekerjaan_ayah?: string;
+    pekerjaan_ibu?: string;
+    jalan?: string;
+    kelurahan?: string;
+    kecamatan?: string;
+    kabupaten?: string;
+    provinsi?: string;
+
+    // informasi wali
+    nama_wali?: string;
+    pekerjaan_wali?: string;
+    alamat_wali?: string;
+    no_telepon_wali?: string;
+
     created_at: string;
 };
 
@@ -38,7 +72,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('mata-pelajaran.delete'),
+                route('siswa.delete'),
                 {
                     id,
                 },
@@ -46,7 +80,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your mata pelajaran has been deleted.',
+                            text: 'Your siswa has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -66,29 +100,15 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<MataPelajaranType>[] = [
-    {
-        id: 'select',
-        header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
+export const columns: ColumnDef<SiswaType>[] = [
     {
         id: 'rowNumber',
         header: '#',
         cell: ({ row }) => row.index + 1,
     },
+
     {
-        accessorKey: 'name',
+        accessorKey: 'nama_lengkap',
         header: ({ column }) => {
             return (
                 <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -101,39 +121,38 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
             return <span className="px-2">{cell.getValue<string>()}</span>;
         },
     },
-    {
-        accessorKey: 'kategori',
-        header: ({ column }) => {
-            return (
-                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Kategori
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            const isWajib = value === 'wajib';
-            return (
-                <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        isWajib ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                    }`}
-                >
-                    {isWajib ? 'Wajib' : 'Ekstrakurikuler'}
-                </span>
-            );
-        },
-    },
+
     {
         id: 'kelas',
-        accessorFn: (row) => row.kelas.name,
+        accessorFn: (row) => row.kelas_aktif.kelas.name,
         filterFn: (row, id, value) => {
-            return row.original.kelas.id == value
+            return row.original.kelas_aktif.kelas.id == value;
         },
         header: 'Kelas',
         cell: ({ cell }) => {
-            return <span className="px-2">{cell.getValue<string>()}</span>;
+            const value = cell.getValue<string>();
+            return <Badge className="bg-primary text-primary-foreground">{value}</Badge>;
+        },
+    },
+    {
+        accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
+        header: 'Nilai',
+        cell: ({ cell }) => {
+            const values = cell.getValue<any[]>() || [];
+
+            if (values.length === 0) {
+                return <span className="text-gray-500">Tidak ada nilai</span>;
+            }
+
+            return (
+                <div className="flex flex-wrap gap-1">
+                    {values.map((item, i) => (
+                        <Badge key={i} variant="outline" className="border-gray-300 text-gray-700">
+                            {item.nilai}
+                        </Badge>
+                    ))}
+                </div>
+            );
         },
     },
 
@@ -149,7 +168,7 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
         id: 'actions',
         cell: ({ row }) => {
             const payment = row.original;
-            const store = useProductStore();
+            const store = useNilaiStore();
 
             return (
                 <DropdownMenu>
@@ -161,29 +180,13 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
-                        <DropdownMenuSeparator /> */}
-                        <Link href={`/mata-pelajaran/${payment.id}/materi`}>
-                            <DropdownMenuItem>Lihat Materi</DropdownMenuItem>
-                        </Link>
-                        <Link href={`/mata-pelajaran/${payment.id}/nilai`}>
-                            <DropdownMenuItem>Input Nilai</DropdownMenuItem>
-                        </Link>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
-                                store.setDialog('update');
                                 store.setOpen(true);
                             }}
                         >
-                            Edit Data
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => {
-                                onDelete(payment.id);
-                            }}
-                        >
-                            Delete Data
+                            Detail Nilai
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

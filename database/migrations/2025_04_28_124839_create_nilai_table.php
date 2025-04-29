@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('nilai', function (Blueprint $table) {
             $table->id();
             $table->foreignId('riwayat_kelas_id')->constrained('riwayat_kelas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

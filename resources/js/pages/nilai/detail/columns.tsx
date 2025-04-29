@@ -1,20 +1,18 @@
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import useProductStore from '@/stores/useProduct';
+import useSiswaStore from '@/stores/useSiswa';
 import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { KelasType } from '../kelas/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type MataPelajaranType = {
+
+export type DetailNilaiType = {
     id: number;
-    name: string;
-    kategori: 'wajib' | 'pilihan';
-    kelas: KelasType;
+    nilai: number;
+
     created_at: string;
 };
 
@@ -38,7 +36,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('mata-pelajaran.delete'),
+                route('siswa.delete'),
                 {
                     id,
                 },
@@ -46,7 +44,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your mata pelajaran has been deleted.',
+                            text: 'Your siswa has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -66,90 +64,34 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<MataPelajaranType>[] = [
-    {
-        id: 'select',
-        header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
+export const columns: ColumnDef<DetailNilaiType>[] = [
     {
         id: 'rowNumber',
         header: '#',
         cell: ({ row }) => row.index + 1,
     },
     {
-        accessorKey: 'name',
-        header: ({ column }) => {
-            return (
-                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Name
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ cell }) => {
-            return <span className="px-2">{cell.getValue<string>()}</span>;
-        },
-    },
-    {
-        accessorKey: 'kategori',
-        header: ({ column }) => {
-            return (
-                <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Kategori
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            const isWajib = value === 'wajib';
-            return (
-                <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        isWajib ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                    }`}
-                >
-                    {isWajib ? 'Wajib' : 'Ekstrakurikuler'}
-                </span>
-            );
-        },
-    },
-    {
-        id: 'kelas',
-        accessorFn: (row) => row.kelas.name,
-        filterFn: (row, id, value) => {
-            return row.original.kelas.id == value
-        },
-        header: 'Kelas',
-        cell: ({ cell }) => {
-            return <span className="px-2">{cell.getValue<string>()}</span>;
-        },
+        accessorKey: 'nilai',
+        header: 'Nilai',
     },
 
     {
         accessorKey: 'created_at',
         header: 'Created At',
         cell: ({ cell }) => {
-            const date = new Date(cell.getValue<string>());
-            return <span>{date.toLocaleDateString('id-ID')}</span>;
+            const date = new Date(cell.getValue() as string);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            });
         },
     },
     {
         id: 'actions',
         cell: ({ row }) => {
             const payment = row.original;
-            const store = useProductStore();
+            const store = useSiswaStore();
 
             return (
                 <DropdownMenu>
@@ -163,24 +105,31 @@ export const columns: ColumnDef<MataPelajaranType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
-                        <Link href={`/mata-pelajaran/${payment.id}/materi`}>
-                            <DropdownMenuItem>Lihat Materi</DropdownMenuItem>
-                        </Link>
-                        <Link href={`/mata-pelajaran/${payment.id}/nilai`}>
-                            <DropdownMenuItem>Input Nilai</DropdownMenuItem>
-                        </Link>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
-                                store.setDialog('update');
+                                store.setDialog('ubah_kelas');
                                 store.setOpen(true);
                             }}
                         >
-                            Edit Data
+                            Ubah Kelas
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => {
-                                onDelete(payment.id);
+                                store.setCurrentRow(payment);
+                                store.setDialog('qrcode');
+                                store.setOpen(true);
+                            }}
+                        >
+                            Lihat QRCode
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Data Nilai</DropdownMenuItem>
+                        <Link href={`/siswa/${payment.id}/edit`}>
+                            <DropdownMenuItem>Edit Data</DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                // onDelete(payment.id);
                             }}
                         >
                             Delete Data

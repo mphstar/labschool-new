@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('detail_nilai', function (Blueprint $table) {
             $table->id();
             $table->foreignId('nilai_id')->constrained('nilai')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('materi_id')->constrained('materi')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('nilai')->default(0);
             $table->timestamps();
         });

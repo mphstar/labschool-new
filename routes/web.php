@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
+use App\Http\Controllers\Admin\NilaiController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\UserController;
@@ -64,7 +65,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('delete-multiple', [MateriController::class, 'deleteMultiple'])->name('materi.delete-multiple');
             Route::post('delete', [MateriController::class, 'delete'])->name('materi.delete');
             Route::post('update', [MateriController::class, 'update'])->name('materi.update');
-    
+        });
+
+        Route::prefix('{id}/nilai')->group(function () {
+            Route::get('/', [NilaiController::class, 'index'])->name('nilai.index');
+            Route::post('store', [NilaiController::class, 'store'])->name('nilai.store');
+            Route::post('delete-multiple', [NilaiController::class, 'deleteMultiple'])->name('nilai.delete-multiple');
+            Route::post('delete', [NilaiController::class, 'delete'])->name('nilai.delete');
+            Route::post('update', [NilaiController::class, 'update'])->name('nilai.update');
         });
     });
 
@@ -95,9 +103,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('/ubah-kelas', [SiswaController::class, 'ubahKelas'])->name('siswa.ubah-kelas');
     });
-
-    
-
 });
 
 require __DIR__ . '/settings.php';
