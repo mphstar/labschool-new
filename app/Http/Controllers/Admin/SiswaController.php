@@ -44,14 +44,20 @@ class SiswaController extends Controller
 
     public function ubahKelas(Request $request)
     {
-        $request->validate([
+        $validasi = [
             'siswa_id' => 'required|exists:siswa,id',
             'kelas_id' => 'required|exists:kelas,id',
             'riwayat_kelas_id' => 'required|exists:riwayat_kelas,id',
             'status' => 'required|in:selesai,ulang',
 
             'kelas_selanjutnya' => 'nullable|exists:kelas,id',
-        ], []);
+        ];
+
+        if ($request->status == 'selesai') {
+            $validasi['kelas_selanjutnya'] = 'required|exists:kelas,id';
+        }
+
+        $request->validate($validasi, []);
 
         DB::beginTransaction();
 
@@ -68,12 +74,27 @@ class SiswaController extends Controller
                     'kelas_id' => $request->kelas_selanjutnya,
                     'status' => 'aktif',
                 ]);
+
+                $mapel = MataPelajaran::where('kelas_id', $request->kelas_selanjutnya)->get();
+
+                foreach ($mapel as $item) {
+                    $kelasNext->nilai()->create([
+                        'mata_pelajaran_id' => $item->id,
+                    ]);
+                }
             } else {
                 $kelasNext = RiwayatKelas::create([
                     'siswa_id' => $request->siswa_id,
                     'kelas_id' => $request->kelas_id,
                     'status' => 'aktif',
                 ]);
+
+                $mapel = MataPelajaran::where('kelas_id', $request->kelas_id)->get();
+                foreach ($mapel as $item) {
+                    $kelasNext->nilai()->create([
+                        'mata_pelajaran_id' => $item->id,
+                    ]);
+                }
             }
 
             DB::commit();
