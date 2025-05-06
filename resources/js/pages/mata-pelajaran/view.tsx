@@ -22,7 +22,7 @@ export default function Product() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Kelas" />
+            <Head title="Mata Pelajaran" />
             <FormDialog />
             <div className="flex h-full w-full flex-col gap-4 rounded-xl p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">

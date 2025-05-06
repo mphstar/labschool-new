@@ -3,6 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {{-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+        
+        <meta http-equiv="Access-Control-Allow-Origin" content="*" /> --}}
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
