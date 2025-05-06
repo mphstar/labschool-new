@@ -1,37 +1,25 @@
 import { create } from 'zustand';
 
-interface Nilai {
+interface NilaiType {
     open: boolean;
     setOpen: (open: boolean) => void;
-    dialog: 'detail_nilai' | 'qrcode';
-    setDialog: (dialog: 'detail_nilai' | 'qrcode') => void;
+    dialog: 'create' | 'update';
+    setDialog: (dialog: 'create' | 'update') => void;
     currentRow: any;
     setCurrentRow: (currentRow: any) => void;
-
-    // dialog nilai
-    dialogDetailNilai: 'create' | 'update';
-    setDialogDetailNilai: (dialogDetailNilai: 'create' | 'update') => void;
-    openDetailNilai: boolean;
-    setOpenDetailNilai: (openDetailNilai: boolean) => void;
-    currentRowDetailNilai: any;
-    setCurrentRowDetailNilai: (currentRowDetailNilai: any) => void;
+    loadingSubmit: boolean;
+    setLoadingSubmit: (loadingSubmit: boolean) => void;
 }
 
-const useNilaiStore = create<Nilai>((set) => ({
+const useNilaiStore = create<NilaiType>((set) => ({
     open: false,
     setOpen: (open: boolean) => set({ open }),
-    dialog: 'detail_nilai',
-    setDialog: (dialog: 'detail_nilai' | 'qrcode') => set({ dialog }),
+    dialog: 'create',
+    setDialog: (dialog: 'create' | 'update') => set({ dialog }),
     currentRow: null,
     setCurrentRow: (currentRow) => set({ currentRow }),
-
-    // dialog nilai
-    dialogDetailNilai: 'create',
-    setDialogDetailNilai: (dialogDetailNilai: 'create' | 'update') => set({ dialogDetailNilai }),
-    openDetailNilai: false,
-    setOpenDetailNilai: (openDetailNilai: boolean) => set({ openDetailNilai }),
-    currentRowDetailNilai: null,
-    setCurrentRowDetailNilai: (currentRowDetailNilai) => set({ currentRowDetailNilai }),
+    loadingSubmit: false,
+    setLoadingSubmit: (loadingSubmit: boolean) => set({ loadingSubmit }),
 }));
 
 export default useNilaiStore;

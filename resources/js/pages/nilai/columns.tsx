@@ -1,17 +1,22 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import useNilaiStore from '@/stores/useNilai';
-import { router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
+import { MataPelajaranType } from '../mata-pelajaran/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 type RiwayatKelasType = {
     kelas: KelasType;
+    nilai_mapel: {
+        id: number;
+    };
 };
 
 export type SiswaType = {
@@ -147,7 +152,7 @@ export const columns: ColumnDef<SiswaType>[] = [
             return (
                 <div className="flex flex-wrap gap-1">
                     {values.map((item, i) => (
-                        <Badge key={i} variant="outline" className="border-gray-300 text-gray-700">
+                        <Badge key={i} variant="outline" className={cn('border-gray-300 text-gray-700 font-semibold', item.nilai < 50 && 'bg-red-800 text-white')}>
                             {item.nilai}
                         </Badge>
                     ))}
@@ -169,6 +174,8 @@ export const columns: ColumnDef<SiswaType>[] = [
         cell: ({ row }) => {
             const payment = row.original;
             const store = useNilaiStore();
+            
+            const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
             return (
                 <DropdownMenu>
@@ -180,14 +187,9 @@ export const columns: ColumnDef<SiswaType>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => {
-                                store.setCurrentRow(payment);
-                                store.setOpen(true);
-                            }}
-                        >
-                            Detail Nilai
-                        </DropdownMenuItem>
+                        <Link href={route('nilai.detail.index', [mapel.id, payment.kelas_aktif?.nilai_mapel?.id ?? 0])}>
+                            <DropdownMenuItem>Detail Nilai</DropdownMenuItem>
+                        </Link>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

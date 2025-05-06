@@ -8,4 +8,9 @@ class DetailNilai extends Model
 {
     protected $table = 'detail_nilai';
     protected $guarded = [];
+
+    public function nilai()
+    {
+        return $this->belongsTo(Nilai::class, 'nilai_id');
+    }
 }

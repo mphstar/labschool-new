@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
@@ -83,6 +84,7 @@ class SiswaController extends Controller
 
             throw ValidationException::class::withMessages([
                 'error' => 'Internal Server Error',
+                'message' => $th->getMessage(),
             ]);
         }
     }
@@ -130,10 +132,18 @@ class SiswaController extends Controller
             $req = $request->except('kelas_id');
 
             $siswa = Siswa::create($req);
-            $siswa->riwayat_kelas()->create([
+
+            $riwayatKelas = $siswa->riwayat_kelas()->create([
                 'kelas_id' => $request->kelas_id,
                 'status' => 'aktif',
             ]);
+
+            $mapel = MataPelajaran::where('kelas_id', $request->kelas_id)->get();
+            foreach ($mapel as $item) {
+                $riwayatKelas->nilai()->create([
+                    'mata_pelajaran_id' => $item->id,
+                ]);
+            }
 
             DB::commit();
 

@@ -5,9 +5,7 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    server: {
-        host: '0.0.0.0', // agar bisa diakses dari luar container
-      },
+
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],

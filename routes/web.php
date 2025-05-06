@@ -73,6 +73,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('delete-multiple', [NilaiController::class, 'deleteMultiple'])->name('nilai.delete-multiple');
             Route::post('delete', [NilaiController::class, 'delete'])->name('nilai.delete');
             Route::post('update', [NilaiController::class, 'update'])->name('nilai.update');
+
+            Route::prefix('detail')->group(function () {
+                Route::get('/{nilai_id}', [NilaiController::class, 'detailIndex'])->name('nilai.detail.index');
+                
+            });
         });
     });
 

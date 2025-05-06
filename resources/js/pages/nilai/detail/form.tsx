@@ -7,35 +7,30 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { MataPelajaranType } from '@/pages/mata-pelajaran/columns';
 import useNilaiStore from '@/stores/useNilai';
-import { router, useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
-import { SiswaType } from '../columns';
 
 const DialogCreateNilai = () => {
     const context = useNilaiStore();
-    const { mapel, data: siswaData } = usePage().props as unknown as { mapel: MataPelajaranType; data: SiswaType[] };
+    const { mapel, nilai_id } = usePage().props as unknown as { mapel: MataPelajaranType; nilai_id: number };
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        nilai_id: context.currentRow?.kelas_aktif?.nilai_mapel?.id ?? 0,
-        id: context.currentRowDetailNilai?.id ?? 0,
-        nilai: context.currentRowDetailNilai?.name ?? '',
+        id: context.currentRow?.id ?? 0,
+        nilai: context.currentRow?.nilai ?? '',
+        nilai_id: nilai_id,
     });
 
     useEffect(() => {
-        if (context.currentRowDetailNilai && context.dialogDetailNilai == 'update') {
-            setData('id', context.currentRowDetailNilai.id);
-            setData('nilai', context.currentRowDetailNilai.nilai);
+        if (context.currentRow && context.dialog == 'update') {
+            setData('id', context.currentRow.id);
+            setData('nilai', context.currentRow.nilai);
         }
-    }, [context.currentRowDetailNilai]);
-
-    useEffect(() => {
-        setData('nilai_id', context.currentRow?.kelas_aktif?.nilai_mapel?.id);
     }, [context.currentRow]);
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (context.dialogDetailNilai == 'create') {
+        if (context.dialog == 'create') {
             post(
                 route('nilai.store', {
                     id: mapel.id,
@@ -43,14 +38,7 @@ const DialogCreateNilai = () => {
                 {
                     onSuccess: () => {
                         reset();
-                        context.setOpenDetailNilai(false);
-
-                        router.reload({
-                            onSuccess: (page) => {
-                                const updatedRow = siswaData.find((s) => s.id === context.currentRow.id);
-                                context.setCurrentRow(updatedRow); // kamu harus punya setCurrentRow
-                            },
-                        });
+                        context.setOpen(false);
 
                         toast({
                             title: 'Success',
@@ -75,7 +63,7 @@ const DialogCreateNilai = () => {
                 {
                     onSuccess: () => {
                         reset();
-                        context.setOpenDetailNilai(false);
+                        context.setOpen(false);
 
                         toast({
                             title: 'Success',
@@ -95,17 +83,17 @@ const DialogCreateNilai = () => {
 
     return (
         <Dialog
-            open={context.openDetailNilai}
+            open={context.open}
             onOpenChange={(state) => {
                 reset();
-                context.setOpenDetailNilai(state);
+                context.setOpen(state);
             }}
         >
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader className="text-left">
-                    <DialogTitle>{`${context.dialogDetailNilai == 'create' ? 'Add' : 'Update'} Nilai`}</DialogTitle>
+                    <DialogTitle>{`${context.dialog == 'create' ? 'Add' : 'Update'} Nilai`}</DialogTitle>
                     <DialogDescription>
-                        {`${context.dialogDetailNilai == 'create' ? 'Create new' : 'Update'} Nilai here. `}
+                        {`${context.dialog == 'create' ? 'Create new' : 'Update'} Nilai here. `}
                         Click save when you&apos;re done.
                     </DialogDescription>
                 </DialogHeader>
@@ -121,6 +109,7 @@ const DialogCreateNilai = () => {
                                 placeholder="Masukkan nilai"
                                 className="col-span-4"
                                 autoComplete="off"
+                                type='number'
                             />
                             <InputError message={errors.nilai} className="col-span-4 col-start-3 mt-2" />
                         </div>

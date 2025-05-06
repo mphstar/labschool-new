@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import useSiswaStore from '@/stores/useSiswa';
-import { Link, router } from '@inertiajs/react';
+import { MataPelajaranType } from '@/pages/mata-pelajaran/columns';
+import useNilaiStore from '@/stores/useNilai';
+import { router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -16,7 +18,7 @@ export type DetailNilaiType = {
     created_at: string;
 };
 
-const onDelete = (id: number) => {
+const onDelete = (id: number, mapel_id: number) => {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -36,7 +38,9 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('siswa.delete'),
+                route('nilai.delete', {
+                    id: mapel_id,
+                }),
                 {
                     id,
                 },
@@ -44,7 +48,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your siswa has been deleted.',
+                            text: 'Your nilai has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -65,6 +69,21 @@ const onDelete = (id: number) => {
 };
 
 export const columns: ColumnDef<DetailNilaiType>[] = [
+    {
+        id: 'select',
+        header: ({ table }) => (
+            <Checkbox
+                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
     {
         id: 'rowNumber',
         header: '#',
@@ -91,7 +110,9 @@ export const columns: ColumnDef<DetailNilaiType>[] = [
         id: 'actions',
         cell: ({ row }) => {
             const payment = row.original;
-            const store = useSiswaStore();
+            const store = useNilaiStore();
+
+            const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
             return (
                 <DropdownMenu>
@@ -103,33 +124,18 @@ export const columns: ColumnDef<DetailNilaiType>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
-                        <DropdownMenuSeparator /> */}
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
-                                store.setDialog('ubah_kelas');
+                                store.setDialog('update');
                                 store.setOpen(true);
                             }}
                         >
-                            Ubah Kelas
+                            Edit Data
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => {
-                                store.setCurrentRow(payment);
-                                store.setDialog('qrcode');
-                                store.setOpen(true);
-                            }}
-                        >
-                            Lihat QRCode
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Data Nilai</DropdownMenuItem>
-                        <Link href={`/siswa/${payment.id}/edit`}>
-                            <DropdownMenuItem>Edit Data</DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem
-                            onClick={() => {
-                                // onDelete(payment.id);
+                                onDelete(payment.id, mapel.id);
                             }}
                         >
                             Delete Data

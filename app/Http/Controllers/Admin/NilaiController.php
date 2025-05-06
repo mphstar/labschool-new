@@ -16,10 +16,12 @@ class NilaiController extends Controller
 {
     public function index($id)
     {
-        $data = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai_mapel.detail_nilai'])->latest()->get();
-        $kelas = Kelas::get();
-
         $mapel = MataPelajaran::findOrFail($id);
+        $data = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai_mapel.detail_nilai'])->whereHas('kelas_aktif', function ($q) use ($mapel) {
+            $q->where('kelas_id', $mapel->kelas_id);
+        })->latest()->get();
+
+        $kelas = Kelas::get();
 
         return Inertia::render('nilai/view', [
             'data' => $data,
@@ -122,5 +124,23 @@ class NilaiController extends Controller
                 'error' => 'Internal Server Error',
             ]);
         }
+    }
+
+    public function detailIndex($id, $nilai_id)
+    {
+        $siswa = Siswa::whereHas('riwayat_kelas.nilai', function ($query) use ($nilai_id) {
+            $query->where('id', $nilai_id);
+        })->first();
+
+        $data = DetailNilai::where('nilai_id', $nilai_id)->latest()->get();
+
+        $mapel = MataPelajaran::findOrFail($id);
+
+        return Inertia::render('nilai/detail/view', [
+            'data' => $data,
+            'mapel' => $mapel,
+            'siswa' => $siswa,
+            'nilai_id' => $nilai_id,
+        ]);
     }
 }
