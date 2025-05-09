@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\Nilai;
+use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -29,17 +31,31 @@ class MataPelajaranController extends Controller
             'name' => 'required|string|max:255|unique:mata_pelajaran',
             'kategori' => 'required|in:wajib,ekskul',
             'kelas_id' => 'required|exists:kelas,id',
-        ], [
-        ]);
+        ], []);
 
         DB::beginTransaction();
 
         try {
-            MataPelajaran::create([
+            $mp = MataPelajaran::create([
                 'name' => $request->name,
                 'kategori' => $request->kategori,
                 'kelas_id' => $request->kelas_id,
             ]);
+
+            // Create a new record in the 'detail_nilai' table for each student in the class
+            $siswa = Siswa::with(['kelas_aktif'])->whereHas('kelas_aktif', function ($query) use ($request) {
+                $query->where('kelas_id', $request->kelas_id);
+            })->get();
+
+            foreach ($siswa as $s) {
+                $nl = Nilai::where('riwayat_kelas_id', $s->kelas_aktif->id)->where('mata_pelajaran_id', $mp->id)->first();
+                if (!$nl) {
+                    Nilai::create([
+                        'riwayat_kelas_id' => $s->kelas_aktif->id,
+                        'mata_pelajaran_id' => $mp->id,
+                    ]);
+                }
+            }
 
             DB::commit();
 
@@ -69,7 +85,6 @@ class MataPelajaranController extends Controller
             }
             DB::commit();
             return redirect()->back()->with('success', 'Mata pelajaran deleted successfully');
-
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
@@ -105,8 +120,7 @@ class MataPelajaranController extends Controller
             'name' => 'required|string|max:255|unique:mata_pelajaran,name,' . $request->id,
             'kategori' => 'required|in:wajib,ekskul',
             'kelas_id' => 'required|exists:kelas,id',
-        ], [
-        ]);
+        ], []);
 
         DB::beginTransaction();
 
