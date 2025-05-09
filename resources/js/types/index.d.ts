@@ -27,6 +27,11 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
+    pengaturan: {
+        name: string;
+        logo: string;
+        favicon: string;
+    };
     [key: string]: unknown;
 }
 

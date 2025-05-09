@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            // Add other seeders here if needed
+            PengaturanSeeder::class,
+        ]);
+
+        
         $kelas = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"];
         $mapel = ["Matematika", "Bahasa Indonesia", "Bahasa Inggris", "IPA", "IPS"];
 
@@ -38,5 +44,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'bintang@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
+
+
+        
     }
 }

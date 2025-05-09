@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PengaturanWebsite;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -39,6 +41,23 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+
+        if (Schema::hasTable('pengaturan_website')) {
+            $pengaturan = PengaturanWebsite::first();
+
+            if (!$pengaturan) {
+                $pengaturan = new PengaturanWebsite();
+                $pengaturan->name = 'Labschool';
+                $pengaturan->logo = 'default.png';
+                $pengaturan->save();
+            }
+        } else {
+            $pengaturan = [
+                'name' => 'Labschool',
+                'logo' => 'default.png',
+            ];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -46,10 +65,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn (): array => [
+            'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
-            ]
+            ],
+            'pengaturan' => $pengaturan,
         ];
     }
 }
