@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { MataPelajaranType } from '@/pages/mata-pelajaran/columns';
 import useNilaiStore from '@/stores/useNilai';
@@ -18,12 +19,16 @@ const DialogCreateNilai = () => {
         id: context.currentRow?.id ?? 0,
         nilai: context.currentRow?.nilai ?? '',
         nilai_id: nilai_id,
+        keterangan: context.currentRow?.keterangan ?? '',
+        jenis: context.currentRow?.jenis ?? 'sas',
     });
 
     useEffect(() => {
         if (context.currentRow && context.dialog == 'update') {
             setData('id', context.currentRow.id);
             setData('nilai', context.currentRow.nilai);
+            setData('keterangan', context.currentRow.keterangan);
+            setData('jenis', context.currentRow.jenis);
         }
     }, [context.currentRow]);
 
@@ -109,9 +114,39 @@ const DialogCreateNilai = () => {
                                 placeholder="Masukkan nilai"
                                 className="col-span-4"
                                 autoComplete="off"
-                                type='number'
+                                type="number"
                             />
                             <InputError message={errors.nilai} className="col-span-4 col-start-3 mt-2" />
+                        </div>
+                        <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
+                            <Label className="col-span-2 text-right">Keterangan</Label>
+                            <Input
+                                value={data.keterangan}
+                                onChange={(e) => {
+                                    setData('keterangan', e.target.value);
+                                }}
+                                placeholder="Masukkan keterangan"
+                                className="col-span-4"
+                                autoComplete="off"
+                            />
+                            <InputError message={errors.keterangan} className="col-span-4 col-start-3 mt-2" />
+                        </div>
+
+                        <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
+                            <Label className="col-span-2 text-right">Jenis</Label>
+                            <Select value={data.jenis} onValueChange={(value) => setData('jenis', value)}>
+                                <SelectTrigger className="col-span-4">
+                                    <SelectValue placeholder="" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Jenis</SelectLabel>
+                                        <SelectItem value="sas">Sumatif Akhir Semester</SelectItem>
+                                        <SelectItem value="sat">Seumatif Akhir Tahun</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.jenis} className="col-span-4 col-start-3 mt-2" />
                         </div>
                     </form>
                 </ScrollArea>

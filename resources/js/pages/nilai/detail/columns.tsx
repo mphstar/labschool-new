@@ -1,6 +1,8 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import { MataPelajaranType } from '@/pages/mata-pelajaran/columns';
 import useNilaiStore from '@/stores/useNilai';
 import { router, usePage } from '@inertiajs/react';
@@ -14,7 +16,8 @@ import Swal from 'sweetalert2';
 export type DetailNilaiType = {
     id: number;
     nilai: number;
-
+    jenis: 'sas' | 'sat';
+    keterangan: string;
     created_at: string;
 };
 
@@ -93,6 +96,19 @@ export const columns: ColumnDef<DetailNilaiType>[] = [
         accessorKey: 'nilai',
         header: 'Nilai',
     },
+    {
+        accessorKey: 'keterangan',
+        header: 'Keterangan',
+    },
+    {
+        accessorKey: 'jenis',
+        header: 'Jenis',
+        cell: ({ cell }) => {
+            const value = cell.getValue() as string;
+            return <Badge className={cn(value == 'sas' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800')} variant={'outline'}>{value == 'sas' ? 'Sumatif Akhir Semester' : 'Sumatif Akhir Tahun'}</Badge>;
+        },
+    },
+    
 
     {
         accessorKey: 'created_at',

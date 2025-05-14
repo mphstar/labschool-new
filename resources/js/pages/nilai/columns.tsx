@@ -9,6 +9,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
 import { MataPelajaranType } from '../mata-pelajaran/columns';
+import { DetailNilaiType } from './detail/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -140,8 +141,10 @@ export const columns: ColumnDef<SiswaType>[] = [
         },
     },
     {
+        id: 'detail_nilai',
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'Nilai',
+
         cell: ({ cell }) => {
             const values = cell.getValue<any[]>() || [];
 
@@ -152,12 +155,72 @@ export const columns: ColumnDef<SiswaType>[] = [
             return (
                 <div className="flex flex-wrap gap-1">
                     {values.map((item, i) => (
-                        <Badge key={i} variant="outline" className={cn('border-gray-300 text-gray-700 font-semibold', item.nilai < 50 && 'bg-red-800 text-white')}>
+                        <Badge
+                            key={`detail_nilai_${i}`}
+                            variant="outline"
+                            className={cn('border-gray-300 font-semibold text-gray-700', item.nilai < 50 && 'bg-red-800 text-white')}
+                        >
                             {item.nilai}
                         </Badge>
                     ))}
                 </div>
             );
+        },
+    },
+    {
+        id: 'nsum',
+        accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
+        header: 'N-SUM',
+        cell: ({ cell }) => {
+            const values = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sas') || [];
+
+            if (values.length === 0) {
+                return <span className="text-gray-500">0</span>;
+            }
+
+            const total = values.reduce((acc, item) => acc + item.nilai, 0);
+
+            const average = total / values.length;
+
+            return <Badge>{average.toFixed(0)}</Badge>;
+        },
+    },
+    {
+        id: 'sum_sumatif',
+        accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
+        header: 'N SAS/SAT',
+        cell: ({ cell }) => {
+            const values = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sat') || [];
+
+            if (values.length === 0) {
+                return <span className="text-gray-500">0</span>;
+            }
+
+            const total = values.reduce((acc, item) => acc + item.nilai, 0);
+
+            const average = total / values.length;
+
+            return <Badge>{average.toFixed(0)}</Badge>;
+        },
+    },
+    {
+        id: 'cr',
+        accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
+        header: 'NR',
+        cell: ({ cell }) => {
+            const sat = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sat') || [];
+            const sas = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sas') || [];
+
+            const totalSat = sat.reduce((acc, item) => acc + item.nilai, 0);
+            const totalSas = sas.reduce((acc, item) => acc + item.nilai, 0);
+
+            const avgTotalSat = totalSat / sat.length;
+            const avgTotalSas = totalSas / sas.length;
+
+            const total = (avgTotalSat + avgTotalSas) / 2 || 0;
+
+
+            return <Badge>{total.toFixed(0)}</Badge>;
         },
     },
 
@@ -174,7 +237,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         cell: ({ row }) => {
             const payment = row.original;
             const store = useNilaiStore();
-            
+
             const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
             return (

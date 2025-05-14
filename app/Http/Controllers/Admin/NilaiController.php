@@ -35,6 +35,8 @@ class NilaiController extends Controller
         $request->validate([
             'nilai_id' => 'required|exists:nilai,id',
             'nilai' => 'required|numeric|min:0|max:100',
+            'jenis' => 'required|in:sas,sat',
+            'keterangan' => 'required|string|max:255',
         ], []);
 
         DB::beginTransaction();
@@ -43,6 +45,8 @@ class NilaiController extends Controller
             DetailNilai::create([
                 'nilai_id' => $request->nilai_id,
                 'nilai' => $request->nilai,
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
             ]);
 
             DB::commit();
@@ -106,6 +110,8 @@ class NilaiController extends Controller
         $request->validate([
             'id' => 'required|exists:detail_nilai,id',
             'nilai' => 'required|numeric|min:0|max:100',
+            'jenis' => 'required|in:sas,sat',
+            'keterangan' => 'required|string|max:255',
         ], []);
 
         DB::beginTransaction();
@@ -113,6 +119,8 @@ class NilaiController extends Controller
         try {
             DetailNilai::findOrFail($request->id)->update([
                 'nilai' => $request->nilai,
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
             ]);
 
             DB::commit();

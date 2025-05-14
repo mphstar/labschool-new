@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CapaianKompetensi;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Materi;
@@ -20,6 +21,18 @@ class DatabaseSeeder extends Seeder
             // Add other seeders here if needed
             PengaturanSeeder::class,
         ]);
+
+        // Create default Capaian Kompetensi
+        $capaianKompetensi = [
+            ['min' => 0, 'max' => 30, 'label' => 'membutuhkan bimbingan'],
+            ['min' => 31, 'max' => 50, 'label' => 'menunjukkan pemahaman yang cukup'],
+            ['min' => 51, 'max' => 70, 'label' => 'menunjukkan pemahaman yang baik'],
+            ['min' => 71, 'max' => 100, 'label' => 'menunjukkan pemahaman yang sangat baik'],
+        ];
+
+        foreach ($capaianKompetensi as $ck) {
+            CapaianKompetensi::create($ck);
+        }
 
         
         $kelas = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"];

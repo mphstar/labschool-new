@@ -27,6 +27,11 @@ const sidebarNavItems: NavItem[] = [
         url: '/settings/website',
         icon: null,
     },
+    {
+        title: 'Capaian Kompetensi',
+        url: '/settings/capaian-kompetensi',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

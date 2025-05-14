@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CapaianKompetensiController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -23,4 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/website', [WebsiteController::class, 'index'])->name('website.index');
     Route::post('settings/website/update', [WebsiteController::class, 'update'])->name('website.update');
     
+
+    Route::get('settings/capaian-kompetensi', [CapaianKompetensiController::class, 'index'])->name('capaian-kompetensi.index');
+    Route::post('settings/capaian-kompetensi/save', [CapaianKompetensiController::class, 'save'])->name('capaian-kompetensi.save');
 });
