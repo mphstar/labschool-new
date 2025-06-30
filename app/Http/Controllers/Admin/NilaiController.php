@@ -35,7 +35,7 @@ class NilaiController extends Controller
         $request->validate([
             'nilai_id' => 'required|exists:nilai,id',
             'nilai' => 'required|numeric|min:0|max:100',
-            'jenis' => 'required|in:sas,sat',
+            'jenis' => 'required|in:materi,non-tes,tes',
             'keterangan' => 'required|string|max:255',
         ], []);
 
@@ -56,6 +56,7 @@ class NilaiController extends Controller
             DB::rollBack();
             throw ValidationException::withMessages([
                 'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
             ]);
         }
     }

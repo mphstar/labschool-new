@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
 export type DetailNilaiType = {
     id: number;
     nilai: number;
-    jenis: 'sas' | 'sat';
+    jenis: string;
     keterangan: string;
     created_at: string;
 };
@@ -105,7 +105,7 @@ export const columns: ColumnDef<DetailNilaiType>[] = [
         header: 'Jenis',
         cell: ({ cell }) => {
             const value = cell.getValue() as string;
-            return <Badge className={cn(value == 'sas' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800')} variant={'outline'}>{value == 'sas' ? 'Sumatif Akhir Semester' : 'Sumatif Akhir Tahun'}</Badge>;
+            return <Badge className={cn(value == 'materi' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800')} variant={'outline'}>{value == 'materi' ? 'Materi' : value === 'tes' ? 'Tes' : 'Non Tes'}</Badge>;
         },
     },
     
