@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('no_telepon')->nullable();
             $table->string('pendidikan_sebelumnya')->nullable();
 
-            $table->enum('pilihan_seni' , ['-', 'Seni Musik', 'Seni Tari', 'Seni Rupa', 'Seni Teater', 'Seni Media'])->nullable();
+            $table->enum('pilihan_seni', ['-', 'Seni Musik', 'Seni Tari', 'Seni Rupa', 'Seni Teater', 'Seni Media'])->nullable();
 
             // keterangan orang tua
             $table->string('nama_ayah')->nullable();
@@ -43,6 +43,9 @@ return new class extends Migration
             $table->string('pekerjaan_wali')->nullable();
             $table->text('alamat_wali')->nullable();
             $table->string('no_telepon_wali')->nullable();
+
+            $table->foreignId('tahun_akademik_id')->constrained('tahun_akademik')->onDelete('cascade')->onUpdate('cascade');
+
             $table->timestamps();
         });
     }

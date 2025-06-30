@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\NilaiController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\SuratController;
+use App\Http\Controllers\Admin\TahunAkademikController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -43,6 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('update', [UserController::class, 'update'])->name('user.update');
     });
 
+    Route::prefix('tahun-akademik')->group(function () {
+        Route::get('/', [TahunAkademikController::class, 'index'])->name('tahun-akademik.index');
+        Route::post('store', [TahunAkademikController::class, 'store'])->name('tahun-akademik.store');
+        Route::post('delete-multiple', [TahunAkademikController::class, 'deleteMultiple'])->name('tahun-akademik.delete-multiple');
+        Route::post('delete', [TahunAkademikController::class, 'delete'])->name('tahun-akademik.delete');
+        Route::post('update', [TahunAkademikController::class, 'update'])->name('tahun-akademik.update');
+    });
+
     Route::prefix('kelas')->group(function () {
         Route::get('/', [KelasController::class, 'index'])->name('kelas.index');
         Route::post('store', [KelasController::class, 'store'])->name('kelas.store');
@@ -76,7 +85,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::prefix('detail')->group(function () {
                 Route::get('/{nilai_id}', [NilaiController::class, 'detailIndex'])->name('nilai.detail.index');
-                
             });
         });
     });

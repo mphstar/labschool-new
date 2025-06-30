@@ -7,6 +7,7 @@ use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Nilai;
 use App\Models\RiwayatKelas;
+use App\Models\TahunAkademik;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
@@ -20,7 +21,9 @@ class StudentSeeder extends Seeder
     {
         $faker = Faker::create('id_ID'); // Indonesian locale
 
-        echo "Starting StudentSeeder...\n";
+        $tahunAkademik = TahunAkademik::create([
+            'name' => '2025/2026',
+        ]);
 
         // Nama-nama Indonesia yang umum
         $namaLakiLaki = [
@@ -292,6 +295,8 @@ class StudentSeeder extends Seeder
                     'pekerjaan_wali' => $faker->boolean(50) ? $faker->randomElement($pekerjaanOrangTua) : null,
                     'alamat_wali' => $faker->boolean(50) ? 'Jl. ' . $faker->randomElement(['Merdeka', 'Sudirman', 'Gatot Subroto', 'Diponegoro', 'Ahmad Yani', 'Veteran', 'Pahlawan', 'Pemuda']) . ' No. ' . $faker->numberBetween(1, 999) : null,
                     'no_telepon_wali' => $faker->boolean(50) ? '08' . $faker->numerify('#########') : null,
+
+                    'tahun_akademik_id' => $tahunAkademik->id,
                 ]);
 
                 // Buat riwayat kelas dengan status aktif

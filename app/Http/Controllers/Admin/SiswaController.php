@@ -7,6 +7,7 @@ use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
+use App\Models\TahunAkademik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +20,7 @@ class SiswaController extends Controller
         $data = Siswa::with(['kelas_aktif.kelas'])->latest()->get();
         $kelas = Kelas::get();
 
+
         return Inertia::render('siswa/view', [
             'data' => $data,
             'kelas' => $kelas,
@@ -28,8 +30,11 @@ class SiswaController extends Controller
     public function create()
     {
         $kelas = Kelas::get();
+        $thnakademik = TahunAkademik::get();
+        
         return Inertia::render('siswa/create', [
             'kelas' => $kelas,
+            'thnakademik' => $thnakademik,
         ]);
     }
 
@@ -114,6 +119,7 @@ class SiswaController extends Controller
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
+            'tahun_akademik_id' => 'required|exists:tahun_akademik,id',
             'nis' => 'required|string|max:20',
             'nisn' => 'required|string|max:20',
             'nama_lengkap' => 'required|string|max:255',
