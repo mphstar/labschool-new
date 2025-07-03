@@ -123,6 +123,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/qrcode-pdf', [SiswaController::class, 'generateQRCodePdf'])->name('siswa.qrcode-pdf');
     });
+
+    Route::get('/cetak-rapor', [NilaiController::class, 'cetak']);
+
 });
 
 require __DIR__ . '/settings.php';

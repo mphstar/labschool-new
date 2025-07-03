@@ -54,21 +54,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             <HeadTablePagination
                 table={table}
                 action={
-                    <>
-                        <Select onValueChange={(value) => table.getColumn('kelas')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="">
-                                <SelectValue placeholder="Pilih Kelas" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                {kelas.map((item) => (
-                                    <SelectItem key={item.id} value={item.id.toString()}>
-                                        {item.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </>
+                    <></>
                 }
             />
 
