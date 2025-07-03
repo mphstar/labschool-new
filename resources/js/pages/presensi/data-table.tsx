@@ -11,14 +11,12 @@ import {
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { HeadTablePagination } from '@/components/ui/head-table';
 import { DataTablePagination } from '@/components/ui/pagination-control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
 import { router, usePage } from '@inertiajs/react';
-import { Settings2Icon, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
@@ -78,7 +76,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 });
 
                 router.post(
-                    route('siswa.delete-multiple'),
+                    route('kelas.delete-multiple'),
                     {
                         data: payloadRequest,
                     },
@@ -86,7 +84,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         onSuccess: () => {
                             Swal.fire({
                                 title: 'Deleted!',
-                                text: 'Your siswa has been deleted.',
+                                text: 'Your kelas has been deleted.',
                                 icon: 'success',
                                 confirmButtonText: 'OK',
                             });
@@ -108,7 +106,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         });
     };
 
-    const { kelas, tahun_akademik } = usePage().props as unknown as { kelas: KelasType[]; tahun_akademik: TahunAkademikType[] };
+    const { kelas, thnakademik } = usePage().props as unknown as { kelas: KelasType[]; thnakademik: TahunAkademikType[] };
 
     return (
         <div className="">
@@ -117,12 +115,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 action={
                     <>
                         <Select onValueChange={(value) => table.getColumn('tahun_akademik')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="whitespace-nowrap">
+                            <SelectTrigger className="">
                                 <SelectValue placeholder="Tahun Akademik" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua</SelectItem>
-                                {tahun_akademik.map((item) => (
+                                {thnakademik.map((item) => (
                                     <SelectItem key={item.id} value={item.id.toString()}>
                                         {item.name}
                                     </SelectItem>
@@ -130,7 +128,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             </SelectContent>
                         </Select>
                         <Select onValueChange={(value) => table.getColumn('kelas')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="whitespace-nowrap">
+                            <SelectTrigger className="">
                                 <SelectValue placeholder="Pilih Kelas" />
                             </SelectTrigger>
                             <SelectContent>
@@ -142,48 +140,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Select onValueChange={(value) => table.getColumn('jenis_kelamin')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="whitespace-nowrap">
-                                <SelectValue placeholder="Jenis Kelamin" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="L">Laki-laki</SelectItem>
-                                <SelectItem value="P">Perempuan</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="w-full md:w-fit" asChild>
-                                <Button variant="outline">
-                                    <Settings2Icon className="h-4 w-4" /> <span className="md:hidden">Options</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                    onClick={async (e) => {
-                                        e.currentTarget.blur();
-                                        const tahunAkademik = table.getColumn('tahun_akademik')?.getFilterValue();
-                                        const kelas = table.getColumn('kelas')?.getFilterValue();
-                                        if (!tahunAkademik || tahunAkademik === 'all' || !kelas || kelas === 'all') {
-                                            toast({
-                                                title: 'Error',
-                                                description: 'Silakan pilih tahun akademik dan kelas terlebih dahulu.',
-                                            });
-                                            return;
-                                        }
-                                        
-                                        const url = route('siswa.qrcode-pdf', {
-                                            tahun_akademik: tahunAkademik,
-                                            kelas: kelas,
-                                        });
-                                        window.open(url, '_blank');
-                                    }}
-                                >
-                                    Cetak QRCode
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => alert('Another action')}>Another Action</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
                     </>
                 }
             />

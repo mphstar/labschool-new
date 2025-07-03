@@ -8,22 +8,26 @@ use App\Models\MataPelajaran;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
 use App\Models\TahunAkademik;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SiswaController extends Controller
 {
     public function index()
     {
-        $data = Siswa::with(['kelas_aktif.kelas'])->latest()->get();
+        $data = Siswa::with(['kelas_aktif.kelas', 'tahun_akademik'])->latest()->get();
         $kelas = Kelas::get();
+        $tahun_akademik = TahunAkademik::get();
 
 
         return Inertia::render('siswa/view', [
             'data' => $data,
             'kelas' => $kelas,
+            'tahun_akademik' => $tahun_akademik,
         ]);
     }
 
@@ -31,7 +35,7 @@ class SiswaController extends Controller
     {
         $kelas = Kelas::get();
         $thnakademik = TahunAkademik::get();
-        
+
         return Inertia::render('siswa/create', [
             'kelas' => $kelas,
             'thnakademik' => $thnakademik,
@@ -283,5 +287,37 @@ class SiswaController extends Controller
                 'error' => 'Internal Server Error',
             ]);
         }
+    }
+
+    public function generateQRCodePdf(Request $request)
+    {
+        $request->validate([
+            'tahun_akademik' => 'required',
+            'kelas' => 'required',
+        ]);
+
+        $siswa = Siswa::where('tahun_akademik_id', $request->tahun_akademik)
+            ->whereHas('riwayat_kelas', function ($query) use ($request) {
+                $query->where('kelas_id', $request->kelas)->where('status', 'aktif');
+            })
+            ->get();
+
+        // Generate QR PNG base64 untuk setiap siswa
+        $qrData = $siswa->map(function ($item) {
+            $qrPng = QrCode::format('png')->size(120)->generate($item->nis);
+            $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPng);
+            return [
+                'nama' => $item->nama,
+                'nis' => $item->nis,
+                'qr' => $qrBase64,
+            ];
+        });
+
+        $pdf = Pdf::loadView('pdf.qrcode-siswa', [
+            'qrData' => $qrData,
+            'kelas' => Kelas::find($request->kelas),
+            'tahun_akademik' => TahunAkademik::find($request->tahun_akademik),
+        ]);
+        return $pdf->download('qrcode-siswa.pdf');
     }
 }

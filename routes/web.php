@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\NilaiController;
+use App\Http\Controllers\Admin\PresensiController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\TahunAkademikController;
@@ -105,6 +106,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('update', [SuratController::class, 'update'])->name('surat.update');
     });
 
+    Route::prefix('presensi')->group(function () {
+        Route::get('/', [PresensiController::class, 'index'])->name('presensi.index');
+    });
+
     Route::prefix('siswa')->group(function () {
         Route::get('/', [SiswaController::class, 'index'])->name('siswa.index');
         Route::get('/create', [SiswaController::class, 'create'])->name('siswa.create');
@@ -115,6 +120,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('update', [SiswaController::class, 'update'])->name('siswa.update');
 
         Route::post('/ubah-kelas', [SiswaController::class, 'ubahKelas'])->name('siswa.ubah-kelas');
+
+        Route::get('/qrcode-pdf', [SiswaController::class, 'generateQRCodePdf'])->name('siswa.qrcode-pdf');
     });
 });
 

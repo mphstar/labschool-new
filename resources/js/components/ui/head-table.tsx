@@ -19,7 +19,7 @@ export function HeadTablePagination<TData>({
   action
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex md:items-center flex-col-reverse md:flex-row w-full gap-2 justify-between">
+    <div className="flex md:items-center flex-col-reverse md:flex-row w-full gap-2 justify-between overflow-x-auto">
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           {/* <p className="text-sm font-medium">Rows per page</p> */}
@@ -48,7 +48,7 @@ export function HeadTablePagination<TData>({
             placeholder="Cari data..."
             value={table.getState().globalFilter ?? ""}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className="w-full"
+            className="w-full min-w-[150px] whitespace-nowrap"
             />
       </div>
     </div>
