@@ -9,6 +9,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
 import { MataPelajaranType } from '../mata-pelajaran/columns';
+import { TahunAkademikType } from '../tahun-akademik/columns';
 import { DetailNilaiType } from './detail/columns';
 
 // This type is used to define the shape of our data.
@@ -54,6 +55,8 @@ export type SiswaType = {
     pekerjaan_wali?: string;
     alamat_wali?: string;
     no_telepon_wali?: string;
+
+    tahun_akademik: TahunAkademikType;
 
     created_at: string;
 };
@@ -220,6 +223,12 @@ export const columns: ColumnDef<SiswaType>[] = [
             const total = (avgTotalSat + avgTotalSas) / 2 || 0;
 
             return <Badge variant={'outline'}>{total.toFixed(0)}</Badge>;
+        },
+    },
+    {
+        id: 'tahun_akademik',
+        filterFn: (row, id, value) => {
+            return row.original.tahun_akademik.id == value;
         },
     },
 

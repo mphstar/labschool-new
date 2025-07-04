@@ -17,6 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { KelasType } from '../kelas/columns';
+import { TahunAkademikType } from '../tahun-akademik/columns';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -47,14 +48,28 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         },
     });
 
-    const { kelas } = usePage().props as unknown as { kelas: KelasType[] };
+    const { kelas, tahun_akademik } = usePage().props as unknown as { kelas: KelasType[]; tahun_akademik: TahunAkademikType[] };
 
     return (
         <div className="">
             <HeadTablePagination
                 table={table}
                 action={
-                    <></>
+                    <>
+                        <Select onValueChange={(value) => table.getColumn('tahun_akademik')?.setFilterValue(value == 'all' ? undefined : value)}>
+                            <SelectTrigger className="whitespace-nowrap">
+                                <SelectValue placeholder="Tahun Akademik" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Semua</SelectItem>
+                                {tahun_akademik.map((item) => (
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                        {item.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </>
                 }
             />
 

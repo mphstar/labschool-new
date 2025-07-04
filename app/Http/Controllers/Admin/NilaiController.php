@@ -7,6 +7,7 @@ use App\Models\DetailNilai;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Siswa;
+use App\Models\TahunAkademik;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,16 +19,18 @@ class NilaiController extends Controller
     public function index($id)
     {
         $mapel = MataPelajaran::findOrFail($id);
-        $data = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai_mapel.detail_nilai'])->whereHas('kelas_aktif', function ($q) use ($mapel) {
+        $data = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai_mapel.detail_nilai', 'tahun_akademik'])->whereHas('kelas_aktif', function ($q) use ($mapel) {
             $q->where('kelas_id', $mapel->kelas_id);
         })->latest()->get();
 
         $kelas = Kelas::get();
+        $tahun_akademik = TahunAkademik::get();
 
         return Inertia::render('nilai/view', [
             'data' => $data,
             'kelas' => $kelas,
             'mapel' => $mapel,
+            'tahun_akademik' => $tahun_akademik,
         ]);
     }
 

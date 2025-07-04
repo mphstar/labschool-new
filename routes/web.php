@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\KeuanganController;
 use App\Http\Controllers\Admin\MataPelajaranController;
 use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\NilaiController;
+use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\PresensiController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\SuratController;
@@ -18,6 +19,13 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
+
+Route::get('/ppdb', [PpdbController::class, 'index'])->name('ppdb.index');
+Route::post('/ppdb', [PpdbController::class, 'store'])->name('ppdb.store');
+Route::get('/ppdb/data', [PpdbController::class, 'dataIndex'])->name('ppdb.data');
+Route::post('/ppdb/move-to-siswa', [PpdbController::class, 'moveToSiswa'])->name('ppdb.move-to-siswa');
+Route::post('/ppdb/delete', [PpdbController::class, 'delete'])->name('ppdb.delete');
+Route::post('/ppdb/delete-multiple', [PpdbController::class, 'deleteMultiple'])->name('ppdb.delete-multiple');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -124,8 +132,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/qrcode-pdf', [SiswaController::class, 'generateQRCodePdf'])->name('siswa.qrcode-pdf');
     });
 
-    Route::get('/cetak-rapor', [NilaiController::class, 'cetak']);
+    Route::prefix('data-ppdb')->group(function () {
+        Route::get('/', [PpdbController::class, 'dataIndex'])->name('ppdb.data.index');
+    });
 
+    Route::get('/cetak-rapor', [NilaiController::class, 'cetak']);
 });
 
 require __DIR__ . '/settings.php';
