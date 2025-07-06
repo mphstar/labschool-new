@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import useProductStore from '@/stores/useProduct';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { Plus, QrCode } from 'lucide-react';
 import { PresensiType, columns } from './columns';
 import { DataTable } from './data-table';
 import FormDialog from './form';
@@ -30,6 +30,12 @@ export default function Product() {
                         <p className="text-muted-foreground">Here&apos;s a list of your presensi for this month!</p>
                     </div>
                     <div className="flex gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href="/presensi/create">
+                                <QrCode className="mr-2 h-4 w-4" />
+                                Scanner QR Code
+                            </Link>
+                        </Button>
                         <Button
                             onClick={() => {
                                 store.setDialog('create');

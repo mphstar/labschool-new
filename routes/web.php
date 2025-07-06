@@ -22,12 +22,14 @@ Route::get('/', function () {
 
 Route::get('/ppdb', [PpdbController::class, 'index'])->name('ppdb.index');
 Route::post('/ppdb', [PpdbController::class, 'store'])->name('ppdb.store');
-Route::get('/ppdb/data', [PpdbController::class, 'dataIndex'])->name('ppdb.data');
-Route::post('/ppdb/move-to-siswa', [PpdbController::class, 'moveToSiswa'])->name('ppdb.move-to-siswa');
-Route::post('/ppdb/delete', [PpdbController::class, 'delete'])->name('ppdb.delete');
-Route::post('/ppdb/delete-multiple', [PpdbController::class, 'deleteMultiple'])->name('ppdb.delete-multiple');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/ppdb/data', [PpdbController::class, 'dataIndex'])->name('ppdb.data');
+    Route::post('/ppdb/move-to-siswa', [PpdbController::class, 'moveToSiswa'])->name('ppdb.move-to-siswa');
+    Route::post('/ppdb/delete', [PpdbController::class, 'delete'])->name('ppdb.delete');
+    Route::post('/ppdb/delete-multiple', [PpdbController::class, 'deleteMultiple'])->name('ppdb.delete-multiple');
+
+
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
@@ -116,6 +118,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('presensi')->group(function () {
         Route::get('/', [PresensiController::class, 'index'])->name('presensi.index');
+        Route::get('/create', [PresensiController::class, 'create'])->name('presensi.create');
+        Route::post('/store', [PresensiController::class, 'store'])->name('presensi.store');
+        Route::get('/get-siswa-by-kelas', [PresensiController::class, 'getSiswaByKelas'])->name('presensi.get-siswa-by-kelas');
+        Route::post('/process-qr', [PresensiController::class, 'processQRCode'])->name('presensi.process-qr');
+        Route::post('/delete', [PresensiController::class, 'delete'])->name('presensi.delete');
+        Route::post('/delete-multiple', [PresensiController::class, 'deleteMultiple'])->name('presensi.delete-multiple');
+        Route::post('/update', [PresensiController::class, 'update'])->name('presensi.update');
     });
 
     Route::prefix('siswa')->group(function () {

@@ -42,7 +42,7 @@ const formatCurrency = (value: string) => {
 const FormDialog = () => {
     const context = useProductStore();
 
-    console.log(context.currentRow);
+    // console.log(context.currentRow);
 
     const form = useForm<UserForm>({
         resolver: zodResolver(formSchema),

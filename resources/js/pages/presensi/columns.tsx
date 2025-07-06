@@ -21,6 +21,7 @@ export type RiwayatKelasType = {
 
 export type PresensiType = {
     id: number;
+    riwayat_kelas_id: number;
     status: string;
     keterangan?: string;
     tanggal: string;
@@ -48,7 +49,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('kelas.delete'),
+                route('presensi.delete'),
                 {
                     id,
                 },
@@ -56,7 +57,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your kelas has been deleted.',
+                            text: 'Presensi has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -146,11 +147,16 @@ export const columns: ColumnDef<PresensiType>[] = [
     },
 
     {
-        accessorKey: 'created_at',
-        header: 'Created At',
+        accessorKey: 'tanggal',
+        header: 'Tanggal',
         cell: ({ cell }) => {
             const date = new Date(cell.getValue<string>());
-            return <span>{date.toLocaleDateString('id-ID')}</span>;
+            return (
+                <span className="">
+                    {date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}{' '}
+                    {date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+            );
         },
     },
     {

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <title>Rapor Siswa</title>
     <style>
         body {
             font-family: sans-serif;

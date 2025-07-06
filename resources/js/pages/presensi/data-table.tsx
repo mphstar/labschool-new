@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 });
 
                 router.post(
-                    route('kelas.delete-multiple'),
+                    route('presensi.delete-multiple'),
                     {
                         data: payloadRequest,
                     },
@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         onSuccess: () => {
                             Swal.fire({
                                 title: 'Deleted!',
-                                text: 'Your kelas has been deleted.',
+                                text: 'Selected presensi has been deleted.',
                                 icon: 'success',
                                 confirmButtonText: 'OK',
                             });
