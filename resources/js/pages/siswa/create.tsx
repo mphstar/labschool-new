@@ -322,7 +322,6 @@ export default function Page() {
                             }}
                             placeholder="Masukkan No Telepon"
                             type="number"
-                            max={15}
                             className=""
                             autoComplete="off"
                         />

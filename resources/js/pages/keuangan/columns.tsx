@@ -110,7 +110,11 @@ export const columns: ColumnDef<KeuanganType>[] = [
         header: 'Jenis',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
-            return <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>{value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}</Badge>;
+            return (
+                <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>
+                    {value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}
+                </Badge>
+            );
         },
     },
     {
@@ -118,7 +122,11 @@ export const columns: ColumnDef<KeuanganType>[] = [
         header: 'Tipe Pembayaran',
         cell: ({ cell }) => {
             const value = cell.getValue<string>();
-            return <Badge className={`${value == 'tunai' ? 'bg-slate-200 text-slate-800' : 'bg-cyan-200 text-cyan-800'}`}>{value === 'tunai' ? 'Tunai' : 'Transfer'}</Badge>;
+            return (
+                <Badge className={`${value == 'tunai' ? 'bg-slate-200 text-slate-800' : 'bg-cyan-200 text-cyan-800'}`}>
+                    {value === 'tunai' ? 'Tunai' : 'Transfer'}
+                </Badge>
+            );
         },
     },
     {
@@ -137,7 +145,7 @@ export const columns: ColumnDef<KeuanganType>[] = [
             return (
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="link" className="text-blue-500 hover:underline px-0">
+                        <Button variant="link" className="px-0 text-blue-500 hover:underline">
                             Lihat Bukti
                         </Button>
                     </DialogTrigger>
@@ -204,4 +212,5 @@ export const columns: ColumnDef<KeuanganType>[] = [
             );
         },
     },
+    
 ];

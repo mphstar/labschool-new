@@ -101,8 +101,13 @@ const Register = () => {
     })
   }
 
+  React.useEffect(() => {
+    document.documentElement.classList.remove('dark')
+  }, [])
+
   // Show flash messages
   React.useEffect(() => {
+    
     if (flash?.success) {
       toast({
         title: 'Berhasil!',

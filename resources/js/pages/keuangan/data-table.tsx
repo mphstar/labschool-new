@@ -10,11 +10,12 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { HeadTablePagination } from '@/components/ui/head-table';
 import { DataTablePagination } from '@/components/ui/pagination-control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { router } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -184,6 +185,45 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             </TableRow>
                         )}
                     </TableBody>
+                    <TableFooter className="bg-background">
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="border-none bg-transparent py-4 text-end">
+                                {/* Summary Footer */}
+                                {(() => {
+                                    // Ambil data dari table.getRowModel().rows
+                                    const rows = table.getRowModel().rows;
+                                    let totalMasuk = 0;
+                                    let totalKeluar = 0;
+                                    rows.forEach((row) => {
+                                        const data = row.original as any;
+                                        if (data.jenis === 'masuk') {
+                                            totalMasuk += data.jumlah || 0;
+                                        } else if (data.jenis === 'keluar') {
+                                            totalKeluar += data.jumlah || 0;
+                                        }
+                                    });
+                                    const selisih = totalMasuk - totalKeluar;
+                                    if (totalMasuk === 0 && totalKeluar === 0) return null;
+                                    return (
+                                        <div className="flex w-full justify-end">
+                                            <div className="flex w-fit flex-row gap-2 justify-end">
+                                                <Badge>
+                                                    <span className="font-semibold">Total Pemasukan:</span> Rp {totalMasuk.toLocaleString('id-ID')}
+                                                </Badge>
+                                                <Badge>
+                                                    <span className="font-semibold">Total Pengeluaran:</span> Rp {totalKeluar.toLocaleString('id-ID')}
+                                                </Badge>
+                                                <Badge className='flex w-fit justify-between rounded px-3 py-1 font-bold' style={{ backgroundColor: selisih >= 0 ? '#bbdefb' : '#ffcdd2', color: selisih >= 0 ? '#0d47a1' : '#b71c1c' }}>
+                                                    <span>Selisih:</span>
+                                                    <span>Rp {selisih.toLocaleString('id-ID')}</span>
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+                            </TableCell>
+                        </TableRow>
+                    </TableFooter>
                 </Table>
             </div>
             <DataTablePagination table={table} />

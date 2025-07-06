@@ -240,6 +240,10 @@ export const columns: ColumnDef<SiswaType>[] = [
     {
         accessorKey: 'pilihan_seni',
         header: 'Pilihan Seni',
+        cell: ({ cell }) => {
+            const value = cell.getValue<string>();
+            return <span className="px-2">{value || '-'}</span>;
+        },
     },
 
     {
