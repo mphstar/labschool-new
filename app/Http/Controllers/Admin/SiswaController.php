@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CapaianKompetensi;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\RiwayatKelas;
@@ -319,5 +320,81 @@ class SiswaController extends Controller
             'tahun_akademik' => TahunAkademik::find($request->tahun_akademik),
         ]);
         return $pdf->download('qrcode-siswa.pdf');
+    }
+
+    public function cetakRapor($id)
+    {
+
+        $siswa = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai.detail_nilai', 'kelas_aktif.nilai.mata_pelajaran'])
+            ->findOrFail($id);
+
+        $capaian = CapaianKompetensi::get();
+
+        $nilai = $siswa->kelas_aktif->nilai->map(function ($item, $key) use ($capaian) {
+            $nsum = $item->detail_nilai->where('jenis', 'materi')->avg('nilai') ?? 0;
+            $nsat_sas = $item->detail_nilai->where('jenis', '!=', 'materi')->avg('nilai') ?? 0;
+
+            // Ambil nilai materi tertinggi dan keterangannya
+            $nilai_materi = $item->detail_nilai->where('jenis', 'materi');
+
+            $nilai_tertinggi = [
+                'nilai' => $nilai_materi->max('nilai') ?? 0,
+                'keterangan' => $nilai_materi->where('nilai', $nilai_materi->max('nilai'))->first()->keterangan ?? 'Tidak Diketahui',
+            ];
+
+            $nilai_terendah = [
+                'nilai' => $nilai_materi->min('nilai') ?? 0,
+                'keterangan' => $nilai_materi->where('nilai', $nilai_materi->min('nilai'))->first()->keterangan ?? 'Tidak Diketahui',
+            ];
+
+            $nr = ($nsum + $nsat_sas) / 2;
+
+            return [
+                'no' => $key + 1,
+                'nama' => $item->mata_pelajaran->name,
+                'nilai' => [
+                    'nsum' => $nsum,
+                    'nsat_sas' => $nsat_sas,
+                    'nr' => $nr,
+                    'nilai_tertinggi' => $nilai_tertinggi['nilai'],
+                    'nilai_terendah' => $nilai_terendah['nilai'],
+                ],
+                'capaian' => [
+                    'capaian_1' => $capaian->filter(function ($item) use ($nilai_tertinggi) {
+                        return $item->min <= $nilai_tertinggi['nilai'] && $item->max >= $nilai_tertinggi['nilai'];
+                    })->first()->label . ' pada ' . $nilai_tertinggi['keterangan'] ?? 'Tidak Diketahui',
+                    'capaian_2' => $capaian->filter(function ($item) use ($nilai_terendah) {
+                        return $item->min <= $nilai_terendah['nilai'] && $item->max >= $nilai_terendah['nilai'];
+                    })->first()->label . ' pada ' . $nilai_terendah['keterangan'] ?? 'Tidak Diketahui',
+                ],
+            ];
+        });
+
+        $data = [
+            'nama' => $siswa->nama_lengkap,
+            'nis' => $siswa->nis,
+            'nisn' => $siswa->nisn,
+            'semester' => 1, // Assuming semester is fixed for this example
+            'kelas' => $siswa->riwayat_kelas->first()->kelas->name ?? 'Tidak Ditemukan',
+            'tahun_ajaran' => $siswa->tahun_akademik->name ?? 'Tidak Diketahui',
+            'mata_pelajaran' => $nilai,
+            'ekskul' => [], // Assuming ekskul data is not available in this example
+            'prestasi' => [], // Assuming prestasi data is not available in this example
+            'ketidakhadiran' => [
+                'sakit' => 0, // Placeholder, replace with actual data if available
+                'ijin' => 0, // Placeholder, replace with actual data if available
+                'tanpa_keterangan' => 0 // Placeholder, replace with actual data if available
+            ],
+            'wali_kelas' => $siswa->riwayat_kelas->first()->kelas->wali_kelas ?? 'Tidak Ditemukan',
+            'kepala_sekolah' => 'ERVAN PRASETYO, S.Pd., MOS., MCE.', // Assuming fixed kepala sekolah
+            'tanggal_cetak' => now()->format('d F Y'),
+        ];
+
+
+        $pdf = Pdf::loadView('rapor.pdf', [
+            'data' => $data,
+        ]);
+        
+        return $pdf->stream('rapor-' . $siswa->nama_lengkap . '.pdf', []);
     }
 }

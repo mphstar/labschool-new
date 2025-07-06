@@ -141,7 +141,9 @@
                 <!-- Logo Sekolah Kiri - bisa diganti dengan gambar sebenarnya -->
                 <div
                     style="width: 60px; height: 60px; border: 1px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
-                    LOGO
+                    <img style="width: 60px; beight: 60px"
+                        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/default.png'))) }}" />
+
                 </div>
             </div>
 
@@ -156,7 +158,9 @@
                 <!-- Logo Sekolah Kanan - bisa diganti dengan gambar sebenarnya -->
                 <div
                     style="width: 60px; height: 60px; border: 1px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
-                    LOGO
+                    <img style="width: 60px; beight: 60px"
+                        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/default.png'))) }}" />
+
                 </div>
             </div>
         </div>
@@ -212,11 +216,11 @@
                 <tr>
                     <td rowspan="2">{{ $mp['no'] }}</td>
                     <td rowspan="2" class="mata-pelajaran-col">{{ $mp['nama'] }}</td>
-                    <td rowspan="2">{{ $mp['nilai'] }}</td>
-                    <td class="capaian-col">{{ $mp['capaian'] }}</td>
+                    <td rowspan="2">{{ $mp['nilai']['nr'] }}</td>
+                    <td class="capaian-col">{{ $mp['capaian']['capaian_1'] }}</td>
                 </tr>
                 <tr>
-                    <td class="capaian-col">{{ $mp['capaian'] }}</td>
+                    <td class="capaian-col">{{ $mp['capaian']['capaian_2'] }}</td>
                 </tr>
             @endforeach
         </tbody>

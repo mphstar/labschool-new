@@ -272,6 +272,9 @@ export const columns: ColumnDef<SiswaType>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator /> */}
+                        <a href={`/siswa/raport/${payment.id}`} target="_blank">
+                            <DropdownMenuItem>Cetak Rapor</DropdownMenuItem>
+                        </a>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);

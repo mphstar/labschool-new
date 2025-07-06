@@ -161,7 +161,7 @@ export const columns: ColumnDef<SiswaType>[] = [
                         <Badge
                             key={`detail_nilai_${i}`}
                             variant="outline"
-                            className={cn('border-gray-300 font-semibold text-gray-700', item.nilai < 50 && 'bg-red-800 text-white')}
+                            className={cn('border-gray-300 font-semibold text-gray-700 dark:text-gray-200', item.nilai < 50 && 'bg-red-800 text-white')}
                         >
                             {item.nilai}
                         </Badge>

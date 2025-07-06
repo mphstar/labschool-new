@@ -130,6 +130,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/ubah-kelas', [SiswaController::class, 'ubahKelas'])->name('siswa.ubah-kelas');
 
         Route::get('/qrcode-pdf', [SiswaController::class, 'generateQRCodePdf'])->name('siswa.qrcode-pdf');
+
+        Route::get('/raport/{id}', [SiswaController::class, 'cetakRapor'])->name('siswa.raport');
     });
 
     Route::prefix('data-ppdb')->group(function () {
