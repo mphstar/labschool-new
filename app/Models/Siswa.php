@@ -18,4 +18,9 @@ class Siswa extends Model
     {
         return $this->hasOne(RiwayatKelas::class, 'siswa_id', 'id')->where('status', 'aktif');
     }
+
+    public function tahun_akademik()
+    {
+        return $this->belongsTo(TahunAkademik::class, 'tahun_akademik_id');
+    }
 }

@@ -17,11 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            // Add other seeders here if needed
-            PengaturanSeeder::class,
-        ]);
-
         // Create default Capaian Kompetensi
         $capaianKompetensi = [
             ['min' => 0, 'max' => 30, 'label' => 'membutuhkan bimbingan'],
@@ -34,7 +29,7 @@ class DatabaseSeeder extends Seeder
             CapaianKompetensi::create($ck);
         }
 
-        
+        // Create Kelas and Mata Pelajaran first
         $kelas = ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"];
         $mapel = ["Matematika", "Bahasa Indonesia", "Bahasa Inggris", "IPA", "IPS"];
 
@@ -52,13 +47,17 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        // Create default user
         User::factory()->create([
             'name' => 'Bintang',
             'email' => 'bintang@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
 
-
-        
+        // Call other seeders after kelas is created
+        $this->call([
+            PengaturanSeeder::class,
+            StudentSeeder::class,
+        ]);
     }
 }

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('siswa', function (Blueprint $table) {
+        Schema::create('ppdb', function (Blueprint $table) {
             $table->id();
-            $table->string('nis')->nullable();
-            $table->string('nisn')->nullable();
             $table->string('nama_lengkap');
             $table->string('nama_panggilan');
             $table->string('tempat_lahir');
@@ -43,9 +41,6 @@ return new class extends Migration
             $table->string('pekerjaan_wali')->nullable();
             $table->text('alamat_wali')->nullable();
             $table->string('no_telepon_wali')->nullable();
-
-            $table->foreignId('tahun_akademik_id')->constrained('tahun_akademik')->onDelete('cascade')->onUpdate('cascade');
-
             $table->timestamps();
         });
     }
@@ -55,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('siswa');
+        Schema::dropIfExists('ppdb');
     }
 };

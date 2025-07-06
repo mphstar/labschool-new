@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('nilai_id')->constrained('nilai')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('nilai')->default(0);
-            $table->enum('jenis', ['materi', 'sumatif'])->default('materi');
-            $table->foreignId('materi_id')->nullable()->constrained('materi')->onDelete('cascade')->onUpdate('cascade');
+            $table->enum('jenis', ['materi', 'non-tes', 'tes'])->default('materi');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }

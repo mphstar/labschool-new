@@ -141,8 +141,9 @@ const DialogCreateNilai = () => {
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>Jenis</SelectLabel>
-                                        <SelectItem value="sas">Sumatif Akhir Semester</SelectItem>
-                                        <SelectItem value="sat">Seumatif Akhir Tahun</SelectItem>
+                                        <SelectItem value="materi">Materi</SelectItem>
+                                        <SelectItem value="non-tes">Non Tes</SelectItem>
+                                        <SelectItem value="tes">Tes</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>

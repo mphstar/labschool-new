@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, LucideBetweenVerticalStart, LucideUser, PackageSearch } from 'lucide-react';
+import { Folder, LayoutGrid, LucideActivity, LucideAlignEndVertical, LucideBetweenVerticalStart, LucideLayoutTemplate, LucideUser, PackageSearch } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -30,6 +30,19 @@ const masterNavItems: NavItem[] = [
         title: 'Mata Pelajaran',
         url: '/mata-pelajaran',
         icon: PackageSearch,
+    },
+];
+
+const masterNavDataAkademik: NavItem[] = [
+    {
+        title: 'Tahun Akademik',
+        url: '/tahun-akademik',
+        icon: LucideLayoutTemplate,
+    },
+    {
+        title: 'PPDB',
+        url: '/data-ppdb',
+        icon: LucideAlignEndVertical,
     },
     {
         title: 'Siswa',
@@ -87,6 +100,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={mainNavItems} />
                 <NavMain title={'Master Data'} items={masterNavItems} />
+                <NavMain title={'Data Akademik'} items={masterNavDataAkademik} />
                 <NavMain title={'Pencatatan'} items={reportNavItems} />
             </SidebarContent>
 

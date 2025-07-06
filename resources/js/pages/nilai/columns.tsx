@@ -9,6 +9,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
 import { MataPelajaranType } from '../mata-pelajaran/columns';
+import { TahunAkademikType } from '../tahun-akademik/columns';
 import { DetailNilaiType } from './detail/columns';
 
 // This type is used to define the shape of our data.
@@ -54,6 +55,8 @@ export type SiswaType = {
     pekerjaan_wali?: string;
     alamat_wali?: string;
     no_telepon_wali?: string;
+
+    tahun_akademik: TahunAkademikType;
 
     created_at: string;
 };
@@ -172,7 +175,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'N-SUM',
         cell: ({ cell }) => {
-            const values = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sas') || [];
+            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') || [];
 
             if (values.length === 0) {
                 return <span className="text-gray-500">0</span>;
@@ -182,7 +185,7 @@ export const columns: ColumnDef<SiswaType>[] = [
 
             const average = total / values.length;
 
-            return <Badge>{average.toFixed(0)}</Badge>;
+            return <Badge variant={'outline'}>{average.toFixed(0)}</Badge>;
         },
     },
     {
@@ -190,7 +193,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'N SAS/SAT',
         cell: ({ cell }) => {
-            const values = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sat') || [];
+            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis !== 'materi') || [];
 
             if (values.length === 0) {
                 return <span className="text-gray-500">0</span>;
@@ -200,7 +203,7 @@ export const columns: ColumnDef<SiswaType>[] = [
 
             const average = total / values.length;
 
-            return <Badge>{average.toFixed(0)}</Badge>;
+            return <Badge variant={'outline'}>{average.toFixed(0)}</Badge>;
         },
     },
     {
@@ -208,8 +211,8 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'NR',
         cell: ({ cell }) => {
-            const sat = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sat') || [];
-            const sas = cell.getValue<DetailNilaiType[]>().filter(item => item.jenis == 'sas') || [];
+            const sat = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') || [];
+            const sas = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis != 'materi') || [];
 
             const totalSat = sat.reduce((acc, item) => acc + item.nilai, 0);
             const totalSas = sas.reduce((acc, item) => acc + item.nilai, 0);
@@ -219,8 +222,13 @@ export const columns: ColumnDef<SiswaType>[] = [
 
             const total = (avgTotalSat + avgTotalSas) / 2 || 0;
 
-
-            return <Badge>{total.toFixed(0)}</Badge>;
+            return <Badge variant={'outline'}>{total.toFixed(0)}</Badge>;
+        },
+    },
+    {
+        id: 'tahun_akademik',
+        filterFn: (row, id, value) => {
+            return row.original.tahun_akademik.id == value;
         },
     },
 
