@@ -20,7 +20,7 @@ class SiswaController extends Controller
 {
     public function index()
     {
-        $data = Siswa::with(['kelas_aktif.kelas', 'tahun_akademik'])->latest()->get();
+        $data = Siswa::with(['kelas_aktif.kelas', 'tahun_akademik'])->where('status', 'aktif')->latest()->get();
         $kelas = Kelas::get();
         $tahun_akademik = TahunAkademik::get();
 
@@ -59,11 +59,11 @@ class SiswaController extends Controller
             'kelas_id' => 'required|exists:kelas,id',
             'riwayat_kelas_id' => 'required|exists:riwayat_kelas,id',
             'status' => 'required|in:selesai,ulang',
-
-            'kelas_selanjutnya' => 'nullable|exists:kelas,id',
+            'status_siswa' => 'required|in:aktif,putus,lulus',
+            'kelas_selanjutnya' => 'nullable|exists:kelas,id'
         ];
 
-        if ($request->status == 'selesai') {
+        if ($request->status == 'selesai' && $request->status_siswa == 'aktif') {
             $validasi['kelas_selanjutnya'] = 'required|exists:kelas,id';
         }
 
@@ -78,33 +78,43 @@ class SiswaController extends Controller
                 'status' => $request->status,
             ]);
 
-            if ($request->status == 'selesai') {
-                $kelasNext = RiwayatKelas::create([
-                    'siswa_id' => $request->siswa_id,
-                    'kelas_id' => $request->kelas_selanjutnya,
-                    'status' => 'aktif',
-                ]);
-
-                $mapel = MataPelajaran::where('kelas_id', $request->kelas_selanjutnya)->get();
-
-                foreach ($mapel as $item) {
-                    $kelasNext->nilai()->create([
-                        'mata_pelajaran_id' => $item->id,
+            if ($request->status_siswa == 'aktif') {
+                if ($request->status == 'selesai') {
+                    $kelasNext = RiwayatKelas::create([
+                        'siswa_id' => $request->siswa_id,
+                        'kelas_id' => $request->kelas_selanjutnya,
+                        'status' => 'aktif',
                     ]);
+
+                    $mapel = MataPelajaran::where('kelas_id', $request->kelas_selanjutnya)->get();
+
+                    foreach ($mapel as $item) {
+                        $kelasNext->nilai()->create([
+                            'mata_pelajaran_id' => $item->id,
+                        ]);
+                    }
+                } else {
+                    $kelasNext = RiwayatKelas::create([
+                        'siswa_id' => $request->siswa_id,
+                        'kelas_id' => $request->kelas_id,
+                        'status' => 'aktif',
+                    ]);
+
+                    $mapel = MataPelajaran::where('kelas_id', $request->kelas_id)->get();
+                    foreach ($mapel as $item) {
+                        $kelasNext->nilai()->create([
+                            'mata_pelajaran_id' => $item->id,
+                        ]);
+                    }
                 }
+            } elseif ($request->status_siswa == 'putus') {
+                Siswa::findOrFail($request->siswa_id)->update([
+                    'status' => 'putus',
+                ]);
             } else {
-                $kelasNext = RiwayatKelas::create([
-                    'siswa_id' => $request->siswa_id,
-                    'kelas_id' => $request->kelas_id,
-                    'status' => 'aktif',
+                Siswa::findOrFail($request->siswa_id)->update([
+                    'status' => 'lulus',
                 ]);
-
-                $mapel = MataPelajaran::where('kelas_id', $request->kelas_id)->get();
-                foreach ($mapel as $item) {
-                    $kelasNext->nilai()->create([
-                        'mata_pelajaran_id' => $item->id,
-                    ]);
-                }
             }
 
             DB::commit();
@@ -394,7 +404,7 @@ class SiswaController extends Controller
         $pdf = Pdf::loadView('rapor.pdf', [
             'data' => $data,
         ]);
-        
+
         return $pdf->stream('rapor-' . $siswa->nama_lengkap . '.pdf', []);
     }
 }

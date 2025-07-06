@@ -46,6 +46,9 @@ return new class extends Migration
 
             $table->foreignId('tahun_akademik_id')->constrained('tahun_akademik')->onDelete('cascade')->onUpdate('cascade');
 
+
+            $table->enum('status', ['aktif', 'putus', 'lulus'])->default('aktif');
+
             $table->timestamps();
         });
     }
