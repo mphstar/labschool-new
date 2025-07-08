@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryKeuangan;
 use App\Models\Keuangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,10 +14,12 @@ class KeuanganController extends Controller
 {
     public function index()
     {
-        $data = Keuangan::latest()->get();
+        $data = Keuangan::with(['category_keuangan'])->latest()->get();
+        $categories = CategoryKeuangan::get();
 
         return Inertia::render('keuangan/view', [
             'data' => $data,
+            'categories' => $categories,
         ]);
     }
 
@@ -25,6 +28,7 @@ class KeuanganController extends Controller
         $request->validate([
             'keterangan' => 'required|string|max:255',
             'jenis' => 'required|in:masuk,keluar',
+            'category_keuangan_id' => 'required|exists:category_keuangan,id',
             'tipe_pembayaran' => 'required|in:tunai,transfer',
             'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
             'jumlah' => 'required|integer',
@@ -39,6 +43,7 @@ class KeuanganController extends Controller
             $data->jenis = $request->jenis;
             $data->tipe_pembayaran = $request->tipe_pembayaran;
             $data->jumlah = $request->jumlah;
+            $data->category_keuangan_id = $request->category_keuangan_id;
             $data->tanggal = $request->tanggal;
 
             $file = $request->file('bukti_pembayaran');
@@ -138,6 +143,7 @@ class KeuanganController extends Controller
             'id' => 'required|exists:keuangan,id',
             'keterangan' => 'required|string|max:255',
             'jenis' => 'required|in:masuk,keluar',
+            'category_keuangan_id' => 'required|exists:category_keuangan,id',
             'tipe_pembayaran' => 'required|in:tunai,transfer',
             'bukti_pembayaran' => $request->hasFile('bukti_pembayaran') ? 'image|mimes:jpeg,png,jpg,gif|max:4096' : 'nullable',
             'jumlah' => 'required|integer',
@@ -152,6 +158,7 @@ class KeuanganController extends Controller
             $data->jenis = $request->jenis;
             $data->tipe_pembayaran = $request->tipe_pembayaran;
             $data->jumlah = $request->jumlah;
+            $data->category_keuangan_id = $request->category_keuangan_id;
             $data->tanggal = $request->tanggal;
 
             if ($request->hasFile('bukti_pembayaran')) {

@@ -4,7 +4,17 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Folder, LayoutGrid, LucideActivity, LucideAlignEndVertical, LucideBetweenVerticalStart, LucideLayoutTemplate, LucideUser, PackageSearch } from 'lucide-react';
+import {
+    Folder,
+    LayoutGrid,
+    LucideActivity,
+    LucideAlignEndVertical,
+    LucideBetweenVerticalStart,
+    LucideBlocks,
+    LucideLayoutTemplate,
+    LucideUser,
+    PackageSearch,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -30,6 +40,21 @@ const masterNavItems: NavItem[] = [
         title: 'Mata Pelajaran',
         url: '/mata-pelajaran',
         icon: PackageSearch,
+    },
+    {
+        title: 'Kategori Keuangan',
+        url: '/category-keuangan',
+        icon: LucideBlocks,
+    },
+    {
+        title: 'Materi',
+        url: '/materi',
+        icon: Folder,
+    },
+    {
+        title: 'Jadwal Pelajaran',
+        url: '/jadwal-pelajaran',
+        icon: LucideAlignEndVertical,
     },
 ];
 

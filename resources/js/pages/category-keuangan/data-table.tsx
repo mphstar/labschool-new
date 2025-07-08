@@ -10,17 +10,15 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { HeadTablePagination } from '@/components/ui/head-table';
 import { DataTablePagination } from '@/components/ui/pagination-control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { router, usePage } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { CategoryKeuanganType } from '../category-keuangan/columns';
+import { MataPelajaranType } from '../mata-pelajaran/columns';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -31,6 +29,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = useState({});
+
+    const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
     const table = useReactTable({
         data,
@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 });
 
                 router.post(
-                    route('keuangan.delete-multiple'),
+                    route('category-keuangan.delete-multiple'),
                     {
                         data: payloadRequest,
                     },
@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         onSuccess: () => {
                             Swal.fire({
                                 title: 'Deleted!',
-                                text: 'Your keuangan has been deleted.',
+                                text: 'Your category has been deleted.',
                                 icon: 'success',
                                 confirmButtonText: 'OK',
                             });
@@ -106,50 +106,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         });
     };
 
-    const { categories } = usePage().props as unknown as { categories: CategoryKeuanganType[] };
-
     return (
         <div className="">
-            <HeadTablePagination
-                table={table}
-                action={
-                    <>
-                        <Select onValueChange={(value) => table.getColumn('category')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="">
-                                <SelectValue placeholder="Category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                {categories.map((category) => (
-                                    <SelectItem key={category.id} value={category.id.toString()}>
-                                        {category.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Select onValueChange={(value) => table.getColumn('jenis')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="">
-                                <SelectValue placeholder="Jenis" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="masuk">Pemasukan</SelectItem>
-                                <SelectItem value="keluar">Pengeluaran</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Select onValueChange={(value) => table.getColumn('tipe_pembayaran')?.setFilterValue(value == 'all' ? undefined : value)}>
-                            <SelectTrigger className="w-full text-nowrap">
-                                <SelectValue placeholder="Tipe Pembayaran" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="tunai">Tunai</SelectItem>
-                                <SelectItem value="transfer">Transfer</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </>
-                }
-            />
+            <HeadTablePagination table={table} action={<div></div>} />
 
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
                 <div className="border-primary/10 bg-primary/10 my-4 flex items-center justify-between rounded-md border px-4 py-2">
@@ -201,51 +160,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             </TableRow>
                         )}
                     </TableBody>
-                    <TableFooter className="bg-background">
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="border-none bg-transparent py-4 text-end">
-                                {/* Summary Footer */}
-                                {(() => {
-                                    // Ambil data dari table.getRowModel().rows
-                                    const rows = table.getRowModel().rows;
-                                    let totalMasuk = 0;
-                                    let totalKeluar = 0;
-                                    rows.forEach((row) => {
-                                        const data = row.original as any;
-                                        if (data.jenis === 'masuk') {
-                                            totalMasuk += data.jumlah || 0;
-                                        } else if (data.jenis === 'keluar') {
-                                            totalKeluar += data.jumlah || 0;
-                                        }
-                                    });
-                                    const selisih = totalMasuk - totalKeluar;
-                                    if (totalMasuk === 0 && totalKeluar === 0) return null;
-                                    return (
-                                        <div className="flex w-full justify-end">
-                                            <div className="flex w-fit flex-row justify-end gap-2">
-                                                <Badge>
-                                                    <span className="font-semibold">Total Pemasukan:</span> Rp {totalMasuk.toLocaleString('id-ID')}
-                                                </Badge>
-                                                <Badge>
-                                                    <span className="font-semibold">Total Pengeluaran:</span> Rp {totalKeluar.toLocaleString('id-ID')}
-                                                </Badge>
-                                                <Badge
-                                                    className="flex w-fit justify-between rounded px-3 py-1 font-bold"
-                                                    style={{
-                                                        backgroundColor: selisih >= 0 ? '#bbdefb' : '#ffcdd2',
-                                                        color: selisih >= 0 ? '#0d47a1' : '#b71c1c',
-                                                    }}
-                                                >
-                                                    <span>Selisih:</span>
-                                                    <span>Rp {selisih.toLocaleString('id-ID')}</span>
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-                            </TableCell>
-                        </TableRow>
-                    </TableFooter>
                 </Table>
             </div>
             <DataTablePagination table={table} />

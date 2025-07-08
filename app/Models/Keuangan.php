@@ -8,4 +8,9 @@ class Keuangan extends Model
 {
     protected $table = 'keuangan';
     protected $guarded = [];
+
+    public function category_keuangan()
+    {
+        return $this->belongsTo(CategoryKeuangan::class, 'category_keuangan_id');
+    }
 }

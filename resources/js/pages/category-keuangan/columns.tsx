@@ -1,27 +1,18 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { CategoryKeuanganType } from '../category-keuangan/columns';
+import { MataPelajaranType } from '../mata-pelajaran/columns';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type KeuanganType = {
+export type CategoryKeuanganType = {
     id: number;
-    keterangan: string;
-    jenis: 'masuk' | 'keluar';
-    tipe_pembayaran: 'tunai' | 'transfer';
-    bukti_pembayaran: string | File;
-    category_keuangan_id: number;
-    category_keuangan: CategoryKeuanganType;
-    jumlah: number | null;
-    tanggal: string;
+    name: string;
     created_at: string;
 };
 
@@ -45,7 +36,7 @@ const onDelete = (id: number) => {
             });
 
             router.post(
-                route('keuangan.delete'),
+                route('category-keuangan.delete'),
                 {
                     id,
                 },
@@ -53,7 +44,7 @@ const onDelete = (id: number) => {
                     onSuccess: () => {
                         Swal.fire({
                             title: 'Deleted!',
-                            text: 'Your keuangan has been deleted.',
+                            text: 'Your category has been deleted.',
                             icon: 'success',
                             confirmButtonText: 'OK',
                         });
@@ -73,7 +64,7 @@ const onDelete = (id: number) => {
     });
 };
 
-export const columns: ColumnDef<KeuanganType>[] = [
+export const columns: ColumnDef<CategoryKeuanganType>[] = [
     {
         id: 'select',
         header: ({ table }) => (
@@ -95,11 +86,11 @@ export const columns: ColumnDef<KeuanganType>[] = [
         cell: ({ row }) => row.index + 1,
     },
     {
-        accessorKey: 'keterangan',
+        accessorKey: 'name',
         header: ({ column }) => {
             return (
                 <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Keterangan
+                    Name
                     <ArrowUpDown className="ml-1 h-4 w-4" />
                 </Button>
             );
@@ -108,81 +99,10 @@ export const columns: ColumnDef<KeuanganType>[] = [
             return <span className="px-2">{cell.getValue<string>()}</span>;
         },
     },
-    {
-        accessorKey: 'jenis',
-        header: 'Jenis',
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            return (
-                <Badge className={`${value == 'masuk' ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'}`}>
-                    {value === 'masuk' ? 'Pemasukan' : 'Pengeluaran'}
-                </Badge>
-            );
-        },
-    },
-    {
-        id: 'category',
-        accessorKey: 'category_keuangan.name',
-        header: 'Kategori',
-        filterFn: (row, id, value) => {
-            return row.original.category_keuangan.id.toString() === value;
-        },
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            return <span className="">{value}</span>;
-        },
-    },
-    {
-        accessorKey: 'tipe_pembayaran',
-        header: 'Tipe Pembayaran',
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            return (
-                <Badge className={`${value == 'tunai' ? 'bg-slate-200 text-slate-800' : 'bg-cyan-200 text-cyan-800'}`}>
-                    {value === 'tunai' ? 'Tunai' : 'Transfer'}
-                </Badge>
-            );
-        },
-    },
-    {
-        accessorKey: 'jumlah',
-        header: 'Jumlah',
-        cell: ({ cell }) => {
-            const value = cell.getValue<number>();
-            return <span className="">Rp {value.toLocaleString('id-ID')}</span>;
-        },
-    },
-    {
-        accessorKey: 'bukti_pembayaran',
-        header: 'Bukti Pembayaran',
-        cell: ({ cell }) => {
-            const value = cell.getValue<string>();
-            return (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="link" className="px-0 text-blue-500 hover:underline">
-                            Lihat Bukti
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md sm:max-w-xl">
-                        <DialogHeader>
-                            <DialogTitle>Bukti Pembayaran</DialogTitle>
-                            <DialogDescription>
-                                Berikut adalah bukti pembayaran yang telah diunggah. Anda dapat memeriksa detailnya di bawah ini.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex w-full justify-center">
-                            <img src={value} alt="Bukti Pembayaran" className="max-h-[400px] w-auto rounded border" />
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            );
-        },
-    },
 
     {
-        accessorKey: 'tanggal',
-        header: 'Tanggal',
+        accessorKey: 'created_at',
+        header: 'Created At',
         cell: ({ cell }) => {
             const date = new Date(cell.getValue<string>());
             return <span>{date.toLocaleDateString('id-ID')}</span>;
@@ -193,6 +113,7 @@ export const columns: ColumnDef<KeuanganType>[] = [
         cell: ({ row }) => {
             const payment = row.original;
             const store = useProductStore();
+            const { mapel } = usePage().props as unknown as { mapel: MataPelajaranType };
 
             return (
                 <DropdownMenu>
