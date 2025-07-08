@@ -7,7 +7,6 @@ import { Link } from '@inertiajs/react';
 import {
     Folder,
     LayoutGrid,
-    LucideActivity,
     LucideAlignEndVertical,
     LucideBetweenVerticalStart,
     LucideBlocks,
@@ -45,16 +44,6 @@ const masterNavItems: NavItem[] = [
         title: 'Kategori Keuangan',
         url: '/category-keuangan',
         icon: LucideBlocks,
-    },
-    {
-        title: 'Materi',
-        url: '/materi',
-        icon: Folder,
-    },
-    {
-        title: 'Jadwal Pelajaran',
-        url: '/jadwal-pelajaran',
-        icon: LucideAlignEndVertical,
     },
 ];
 

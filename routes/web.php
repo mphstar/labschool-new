@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\TahunAkademikController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,9 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/ppdb/delete-multiple', [PpdbController::class, 'deleteMultiple'])->name('ppdb.delete-multiple');
 
 
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
 
     Route::get('product', [ProductController::class, 'index'])->name('product.index');
     Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
