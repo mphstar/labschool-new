@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kelas', function (Blueprint $table) {
+        Schema::create('pengaturan_ppdb', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->string(column: 'title');
+            $table->string(column: 'description')->nullable();
+            $table->string(column: 'no_rekening');
+            $table->string(column: 'atas_nama')->nullable();
+            $table->integer(column: 'biaya_pendaftaran')->default(0);
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kelas');
+        Schema::dropIfExists('pengaturan_ppdb');
     }
 };

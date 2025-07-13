@@ -49,7 +49,7 @@
                     <div class="qr-item">
                         <img src="{{ $data['qr'] }}" alt="QR {{ $data['nis'] }}">
                         <div
-                            style="font-size:11px; line-height:1.1; margin-bottom:2px; white-space:normal; word-break:break-word;">
+                            style="font-size:11px; font-weight: bold; line-height:1.1; margin-bottom:2px; white-space:normal; word-break:break-word;">
                             {{ $data['nama'] }}</div>
                         <div style="font-size:10px;">{{ $data['nis'] }}</div>
                     </div>

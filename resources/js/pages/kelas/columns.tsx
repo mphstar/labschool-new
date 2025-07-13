@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
+import { User } from '@/types';
 import { router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
@@ -12,6 +13,7 @@ import Swal from 'sweetalert2';
 export type KelasType = {
     id: number;
     name: string;
+    guru: User | null;
     created_at: string;
 };
 
@@ -98,7 +100,15 @@ export const columns: ColumnDef<KelasType>[] = [
             return <span className="px-2">{cell.getValue<string>()}</span>;
         },
     },
-    
+    {
+        accessorKey: 'guru',
+        header: 'Guru Pengajar',
+        cell: ({ cell }) => {
+            const guru = cell.getValue<User | null>();
+            return <span className="px-2">{guru ? guru.name : 'Tidak ada'}</span>;
+        },
+    },
+
     {
         accessorKey: 'created_at',
         header: 'Created At',

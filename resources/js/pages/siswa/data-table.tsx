@@ -181,7 +181,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 >
                                     Cetak QRCode
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => alert('Another action')}>Another Action</DropdownMenuItem>
+                                {/* <DropdownMenuItem onClick={() => alert('Another action')}>Another Action</DropdownMenuItem> */}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </>

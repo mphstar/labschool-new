@@ -6,7 +6,8 @@ import usePpdbStore from '@/stores/usePpdb';
 
 import { router } from '@inertiajs/react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, DeleteIcon, MoreHorizontal, Trash2, UserPlus } from 'lucide-react';
+import { ArrowUpDown, LucideMonitorCheck, MoreHorizontal, Trash2, UserPlus } from 'lucide-react';
+import { MdOutlinePayment } from 'react-icons/md';
 import Swal from 'sweetalert2';
 
 // Type definition untuk PPDB
@@ -35,6 +36,7 @@ export type PpdbType = {
     pekerjaan_wali?: string;
     alamat_wali?: string;
     no_telepon_wali?: string;
+    bukti_pembayaran: string;
     created_at: string;
 };
 
@@ -193,16 +195,16 @@ export const columns: ColumnDef<PpdbType>[] = [
     {
         id: 'actions',
         cell: ({ row }) => {
-            const ppdb = row.original
-            
+            const ppdb = row.original;
+
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            const store = usePpdbStore()
+            const store = usePpdbStore();
 
             const onMoveToSiswa = (ppdb: PpdbType) => {
-                store.setCurrentRow(ppdb)
-                store.setDialog('move_to_siswa')
-                store.setOpen(true)
-            }
+                store.setCurrentRow(ppdb);
+                store.setDialog('move_to_siswa');
+                store.setOpen(true);
+            };
 
             return (
                 <DropdownMenu>
@@ -213,6 +215,14 @@ export const columns: ColumnDef<PpdbType>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => {
+                            store.setCurrentRow(ppdb);
+                            store.setDialog('bukti_pembayaran');
+                            store.setOpen(true);
+                        }}>
+                            <MdOutlinePayment className="mr-2 h-4 w-4" />
+                            Bukti Pembayaran
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onMoveToSiswa(ppdb)}>
                             <UserPlus className="mr-2 h-4 w-4" />
                             Pindah ke Siswa
@@ -223,7 +233,7 @@ export const columns: ColumnDef<PpdbType>[] = [
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-            )
+            );
         },
     },
 ];

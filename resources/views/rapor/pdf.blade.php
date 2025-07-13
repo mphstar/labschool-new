@@ -141,9 +141,9 @@
             <div class="logo-left">
                 <!-- Logo Sekolah Kiri - bisa diganti dengan gambar sebenarnya -->
                 <div
-                    style="width: 60px; height: 60px; border: 1px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
-                    <img style="width: 60px; beight: 60px"
-                        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/default.png'))) }}" />
+                    style="width: 60px; height: 60px; border: 0px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                    <img style="width: 60px; height: 60px"
+                        src="data:image/png;base64,{{ base64_encode(file_get_contents($pengaturan->logo ? $pengaturan->logo : public_path('images/default.png'))) }}" />
 
                 </div>
             </div>
@@ -158,9 +158,9 @@
             <div class="logo-right">
                 <!-- Logo Sekolah Kanan - bisa diganti dengan gambar sebenarnya -->
                 <div
-                    style="width: 60px; height: 60px; border: 1px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
-                    <img style="width: 60px; beight: 60px"
-                        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/default.png'))) }}" />
+                    style="width: 60px; height: 60px; border: 0px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                    <img style="width: 60px; height: 60px"
+                        src="data:image/png;base64,{{ base64_encode(file_get_contents($pengaturan->logo ? $pengaturan->logo : public_path('images/default.png'))) }}" />
 
                 </div>
             </div>
@@ -179,17 +179,18 @@
                 <td class="label">Nama Peserta Didik</td>
                 <td class="colon">:</td>
                 <td class="value"><strong>{{ $data['nama'] }}</strong></td>
-                <td class="label">Semester</td>
+                <td class="label">Tahun Pelajaran</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $data['semester'] }}</td>
+                <td class="value">{{ $data['tahun_ajaran'] }}</td>
+                {{-- <td class="label">Semester</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $data['semester'] }}</td> --}}
             </tr>
             <tr>
                 <td class="label">NIS/NISN</td>
                 <td class="colon">:</td>
                 <td class="value">{{ $data['nis'] }}/{{ $data['nisn'] }}</td>
-                <td class="label">Tahun Pelajaran</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $data['tahun_ajaran'] }}</td>
+
             </tr>
             <tr>
                 <td class="label">Kelas/Fase</td>
@@ -227,7 +228,7 @@
         </tbody>
     </table>
 
-    <br><br>
+    {{-- <br><br>
     <h3>Ekstrakurikuler</h3>
     <table>
         <thead>
@@ -248,7 +249,7 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
+    </table> --}}
 
     <br><br>
     <h3>Prestasi</h3>
@@ -274,17 +275,23 @@
                     Orang Tua,
                     <br><br><br><br>
                     <div style="border-bottom: 1px solid #000; width: 150px; margin: 0 auto;"></div>
+                    <br>
+                    <strong>
+                        {{ $data['nama_orang_tua']['nama_ayah'] ??
+                            ($data['nama_orang_tua']['nama_ibu'] ?? ($data['nama_orang_tua']['nama_wali'] ?? 'Tidak Diketahui')) }}
+                    </strong><br>
+
                 </div>
             </td>
             <td style="border: none; width: 50%; text-align: right; vertical-align: top;">
                 <div style="text-align: center;">
                     Kab. Jember, {{ $data['tanggal_cetak'] ?? '20 Desember 2024' }}<br>
-                    Guru Kelas {{ $data['kelas'] ?? '2A' }}
+                    Guru {{ $data['kelas'] ?? '2A' }}
                     <br><br><br><br>
                     <div style="border-bottom: 1px solid #000; width: 150px; margin: 0 auto;"></div>
                     <br>
-                    <strong>{{ $data['wali_kelas'] ?? 'IFTITAH ADELIA, S.Pd.' }}</strong><br>
-                    NIP : {{ $data['nip_wali_kelas'] ?? '-' }}
+                    <strong>{{ $data['wali_kelas']['nama'] ?? 'IFTITAH ADELIA, S.Pd.' }}</strong><br>
+                    NIP : {{ $data['wali_kelas']['nip'] ?? '-' }}
                 </div>
             </td>
         </tr>

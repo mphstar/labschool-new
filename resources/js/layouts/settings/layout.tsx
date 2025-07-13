@@ -32,6 +32,11 @@ const sidebarNavItems: NavItem[] = [
         url: '/settings/capaian-kompetensi',
         icon: null,
     },
+    {
+        title: 'PPDB',
+        url: '/settings/ppdb',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

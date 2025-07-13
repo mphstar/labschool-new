@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import usePpdbStore from '@/stores/usePpdb';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import BuktiPembayaranDialog from './bukti-pembayaran';
 import { PpdbType, columns } from './columns';
 import { DataTable } from './data-table';
 import MoveToSiswaDialog from './move-to-siswa';
@@ -22,6 +23,7 @@ const view = () => {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Data PPDB" />
             {store.dialog == 'move_to_siswa' && <MoveToSiswaDialog />}
+            {store.dialog == 'bukti_pembayaran' && <BuktiPembayaranDialog />}
             <div className="flex h-full w-full flex-col gap-4 rounded-xl p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
                     <div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\PengaturanPpdb;
 use App\Models\Ppdb;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
@@ -21,7 +22,10 @@ class PpdbController extends Controller
      */
     public function index()
     {
-        return Inertia::render('ppdb/Register', []);
+        $pengaturan = PengaturanPpdb::first();
+        return Inertia::render('ppdb/Register', [
+            'pengaturan' => $pengaturan
+        ]);
     }
 
     /**
@@ -69,10 +73,32 @@ class PpdbController extends Controller
             'pekerjaan_wali' => 'nullable|string|max:255',
             'alamat_wali' => 'nullable|string',
             'no_telepon_wali' => 'nullable|string|max:20',
+            'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         try {
-            Ppdb::create($validated);
+            $ppdb = new Ppdb();
+            $ppdb->fill(collect($validated)->except('bukti_pembayaran')->toArray());
+
+            if ($request->hasFile('bukti_pembayaran')) {
+                $file = $request->file('bukti_pembayaran');
+                // Pastikan folder tujuan ada
+                $tujuan = public_path('uploads/bukti_pembayaran');
+                if (!file_exists($tujuan)) {
+                    mkdir($tujuan, 0755, true);
+                }
+
+                // Generate nama file dengan timestamp
+                $namaFile = now()->format('Ymd_His') . '.' . $file->getClientOriginalExtension();
+
+                // Pindahkan file ke folder public/file_surat
+                $file->move($tujuan, $namaFile);
+
+                // Simpan path relatif ke database
+                $ppdb->bukti_pembayaran = 'uploads/bukti_pembayaran/' . $namaFile;
+            }
+
+            $ppdb->save();
 
             return back()->with('success', 'Pendaftaran PPDB berhasil disimpan!');
         } catch (\Exception $e) {

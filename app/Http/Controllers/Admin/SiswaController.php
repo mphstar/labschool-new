@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CapaianKompetensi;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\PengaturanWebsite;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
 use App\Models\TahunAkademik;
@@ -318,7 +319,7 @@ class SiswaController extends Controller
             $qrPng = QrCode::format('png')->size(120)->generate($item->nis);
             $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPng);
             return [
-                'nama' => $item->nama,
+                'nama' => $item->nama_lengkap,
                 'nis' => $item->nis,
                 'qr' => $qrBase64,
             ];
@@ -335,7 +336,7 @@ class SiswaController extends Controller
     public function cetakRapor($id)
     {
 
-        $siswa = Siswa::with(['kelas_aktif.kelas', 'kelas_aktif.nilai.detail_nilai', 'kelas_aktif.nilai.mata_pelajaran'])
+        $siswa = Siswa::with(['kelas_aktif.kelas.guru', 'kelas_aktif.nilai.detail_nilai', 'kelas_aktif.nilai.mata_pelajaran'])
             ->findOrFail($id);
 
         $capaian = CapaianKompetensi::get();
@@ -389,21 +390,35 @@ class SiswaController extends Controller
             'tahun_ajaran' => $siswa->tahun_akademik->name ?? 'Tidak Diketahui',
             'mata_pelajaran' => $nilai,
             'ekskul' => [], // Assuming ekskul data is not available in this example
-            'prestasi' => [], // Assuming prestasi data is not available in this example
+            'prestasi' => [
+                'Juara 1 Lomba Matematika',
+                'Juara 2 Lomba Sains',
+            ], // Assuming prestasi data is not available in this example
+            'nama_orang_tua' => [
+                'nama_ayah' => $siswa->nama_ayah ?? 'Tidak Diketahui',
+                'nama_ibu' => $siswa->nama_ibu ?? 'Tidak Diketahui',
+                'nama_wali' => $siswa->nama_wali ?? 'Tidak Diketahui',
+            ],
             'ketidakhadiran' => [
                 'sakit' => 0, // Placeholder, replace with actual data if available
                 'ijin' => 0, // Placeholder, replace with actual data if available
                 'tanpa_keterangan' => 0 // Placeholder, replace with actual data if available
             ],
-            'wali_kelas' => $siswa->riwayat_kelas->first()->kelas->wali_kelas ?? 'Tidak Ditemukan',
+            'wali_kelas' => [
+                'nama' => $siswa->riwayat_kelas->first()->kelas->guru->name ?? 'Tidak Ditemukan',
+                'nip' => $siswa->riwayat_kelas->first()->kelas->guru->nip ?? 'Tidak Diketahui',
+            ],
             'kepala_sekolah' => 'ERVAN PRASETYO, S.Pd., MOS., MCE.', // Assuming fixed kepala sekolah
             'tanggal_cetak' => now()->format('d F Y'),
         ];
 
 
+        $pengaturan = PengaturanWebsite::first();
         $pdf = Pdf::loadView('rapor.pdf', [
             'data' => $data,
+            'pengaturan' => $pengaturan,
         ]);
+
 
         return $pdf->stream('rapor-' . $siswa->nama_lengkap . '.pdf', []);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -13,10 +14,12 @@ class KelasController extends Controller
 {
     public function index()
     {
-        $data = Kelas::latest()->get();
+        $data = Kelas::with('guru')->latest()->get();
+        $guru = User::where('role', 'guru')->get();
 
         return Inertia::render('kelas/view', [
             'data' => $data,
+            'guru' => $guru,
         ]);
     }
 
@@ -24,14 +27,15 @@ class KelasController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:kelas',
-        ], [
-        ]);
+            'user_id' => 'nullable|exists:users,id',
+        ], []);
 
         DB::beginTransaction();
 
         try {
             Kelas::create([
                 'name' => $request->name,
+                'user_id' => $request->user_id,
             ]);
 
             DB::commit();
@@ -62,7 +66,6 @@ class KelasController extends Controller
             }
             DB::commit();
             return redirect()->back()->with('success', 'Kelas deleted successfully');
-
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
@@ -96,14 +99,15 @@ class KelasController extends Controller
         $request->validate([
             'id' => 'required|exists:kelas,id',
             'name' => 'required|string|max:255|unique:kelas,name,' . $request->id,
-        ], [
-        ]);
+            'user_id' => 'nullable|exists:users,id',
+        ], []);
 
         DB::beginTransaction();
 
         try {
             $data = Kelas::findOrFail($request->id);
             $data->name = $request->name;
+            $data->user_id = $request->user_id;
             $data->save();
 
             DB::commit();
