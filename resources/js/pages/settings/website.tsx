@@ -18,7 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface WebsiteForm {
+export interface WebsiteForm {
     id: number;
     name: string;
     logo: string | File;

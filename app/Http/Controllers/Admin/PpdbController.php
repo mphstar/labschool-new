@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\PengaturanPpdb;
+use App\Models\PengaturanWebsite;
 use App\Models\Ppdb;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
@@ -23,8 +24,10 @@ class PpdbController extends Controller
     public function index()
     {
         $pengaturan = PengaturanPpdb::first();
+        $website = PengaturanWebsite::first();
         return Inertia::render('ppdb/Register', [
-            'pengaturan' => $pengaturan
+            'pengaturan' => $pengaturan,
+            'website' => $website,
         ]);
     }
 

@@ -12,6 +12,7 @@ import { AlertCircle, Loader2, MapPin, School, User, Users } from 'lucide-react'
 import React from 'react';
 import { z } from 'zod';
 import { PpdbForm } from '../settings/ppdb';
+import { WebsiteForm } from '../settings/website';
 
 // Zod validation schema
 const ppdbSchema = z.object({
@@ -49,9 +50,10 @@ const ppdbSchema = z.object({
 type PpdbFormData = z.infer<typeof ppdbSchema>;
 
 const Register = () => {
-    const { flash, pengaturan } = usePage().props as unknown as {
+    const { flash, pengaturan, website } = usePage().props as unknown as {
         flash: { success?: string; error?: string };
         pengaturan: PpdbForm;
+        website: WebsiteForm;
     };
 
     const { data, setData, post, processing, errors, reset } = useForm<{
@@ -173,9 +175,15 @@ const Register = () => {
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-8">
                 <div className="mx-auto max-w-4xl">
                     <div className="mb-8 text-center">
-                        <School className="mx-auto mb-4 h-16 w-16 text-blue-600" />
-                        <h1 className="mb-2 text-3xl font-bold text-gray-900">Pendaftaran Peserta Didik Baru (PPDB)</h1>
-                        <p className="text-gray-600">Silakan lengkapi formulir pendaftaran di bawah ini dengan data yang benar</p>
+                        {typeof website.logo === 'string' && website.logo ? (
+                            <img src={website.logo} alt="Logo" className="mx-auto mb-4 h-16 w-auto" />
+                        ) : (
+                            <School className="mx-auto mb-4 h-16 w-16 text-blue-600" />
+                        )}
+                        <h1 className="mb-2 text-3xl font-bold text-gray-900">{pengaturan.title ?? 'Pendaftaran'}</h1>
+                        <p className="text-gray-600">
+                            {pengaturan.description ?? 'Silakan lengkapi formulir pendaftaran di bawah ini dengan data yang benar'}
+                        </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
