@@ -22,6 +22,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
+Route::get('/glitchtip/error', function () {
+    throw new Exception('My first GlitchTip error!');
+});
+
 Route::get('/ppdb', [PpdbController::class, 'index'])->name('ppdb.index');
 Route::post('/ppdb', [PpdbController::class, 'store'])->name('ppdb.store');
 

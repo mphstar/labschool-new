@@ -147,7 +147,7 @@ const QRCodeScanner = () => {
                 confirmButtonColor: '#ef4444',
             });
         }
-    }, [selectedCameraId]);    // Stop scanning
+    }, [selectedCameraId]); // Stop scanning
     const stopScanning = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());
@@ -214,7 +214,7 @@ const QRCodeScanner = () => {
             // Fall back to full restart
             startScanning();
         }
-    }, [selectedCameraId, startScanning]);    // Handle QR code detection
+    }, [selectedCameraId, startScanning]); // Handle QR code detection
     const handleQRCodeDetected = useCallback(
         (result: QRScanResult) => {
             // Pause scanning after successful detection (keep video stream alive)
@@ -274,7 +274,8 @@ const QRCodeScanner = () => {
                         timer: 2000, // Auto close after 2 seconds
                         timerProgressBar: true,
                         showConfirmButton: false,
-                        allowOutsideClick: false,                    }).then(() => {
+                        allowOutsideClick: false,
+                    }).then(() => {
                         // Reset scanner for next scan automatically (keep video stream)
                         setScanResult(null);
                         setError(null);
@@ -295,7 +296,8 @@ const QRCodeScanner = () => {
                             timer: 2000,
                             timerProgressBar: true,
                             showConfirmButton: false,
-                            allowOutsideClick: false,                        }).then(() => {
+                            allowOutsideClick: false,
+                        }).then(() => {
                             // Reset scanner and continue scanning (keep video stream)
                             setScanResult(null);
                             setError(null);
@@ -312,7 +314,8 @@ const QRCodeScanner = () => {
                             timer: 3000,
                             timerProgressBar: true,
                             showConfirmButton: false,
-                            allowOutsideClick: false,                        }).then(() => {
+                            allowOutsideClick: false,
+                        }).then(() => {
                             // Reset scanner for retry (keep video stream)
                             setScanResult(null);
                             setError(null);
@@ -332,14 +335,16 @@ const QRCodeScanner = () => {
                     timer: 3000,
                     timerProgressBar: true,
                     showConfirmButton: false,
-                    allowOutsideClick: false,                }).then(() => {
+                    allowOutsideClick: false,
+                }).then(() => {
                     setScanResult(null);
                     setError(null);
                     setTimeout(() => {
                         resumeScanning();
                     }, 500);
                 });
-            }        },
+            }
+        },
         [resumeScanning, setScanResult, setError],
     );
 
@@ -361,7 +366,7 @@ const QRCodeScanner = () => {
             }
         },
         [isScanning, stopScanning, startScanning],
-    );    // Initialize on component mount
+    ); // Initialize on component mount
     useEffect(() => {
         initializeCamera();
 
@@ -498,8 +503,8 @@ const QRCodeScanner = () => {
 
                     {/* Camera Preview */}
                     <Card>
-                        <CardContent className="pt-6">
-                            <div className="bg-muted relative aspect-video w-full overflow-hidden rounded-lg">
+                        <CardContent className="pt-6 h-full">
+                            <div className="bg-muted relative aspect-video w-full min-h-[600px] overflow-hidden rounded-lg">
                                 {isLoading && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="space-y-4 text-center">
@@ -507,7 +512,8 @@ const QRCodeScanner = () => {
                                             <p className="text-muted-foreground">Memuat kamera...</p>
                                         </div>
                                     </div>
-                                )}                                <video
+                                )}{' '}
+                                <video
                                     ref={videoRef}
                                     className={cn('h-full w-full object-cover', !streamRef.current && 'hidden')}
                                     autoPlay
@@ -549,7 +555,8 @@ const QRCodeScanner = () => {
                                         </div>
                                     </div>
                                 )}
-                            </div>{' '}                            {/* Status */}
+                            </div>{' '}
+                            {/* Status */}
                             <div className="mt-4 flex items-center justify-center gap-4">
                                 {isScanning ? (
                                     <Badge variant="default" className="animate-pulse">
