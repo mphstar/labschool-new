@@ -49,7 +49,7 @@ class PresensiController extends Controller
         try {
             // Check if attendance already exists for this student on the given date
             $tanggal = $request->tanggal ? $request->tanggal : now()->format('Y-m-d');
-            
+
             $existingPresensi = Presensi::where('riwayat_kelas_id', $request->riwayat_kelas_id)
                 ->whereDate('tanggal', $tanggal)
                 ->first();
@@ -58,7 +58,7 @@ class PresensiController extends Controller
                 // Get student name for better error message
                 $riwayatKelas = RiwayatKelas::with('siswa')->find($request->riwayat_kelas_id);
                 $siswaName = $riwayatKelas->siswa->nama_lengkap ?? 'Siswa';
-                
+
                 DB::rollBack();
                 throw ValidationException::withMessages([
                     'riwayat_kelas_id' => 'Presensi untuk ' . $siswaName . ' pada tanggal ' . date('d/m/Y', strtotime($tanggal)) . ' sudah tercatat dengan status: ' . ucfirst($existingPresensi->status),
@@ -97,10 +97,10 @@ class PresensiController extends Controller
             $siswa = Siswa::where('nis', $request->qr_data)->first();
 
             if (!$siswa) {
-                return response()->json([
-                    'success' => false,
+
+                throw ValidationException::withMessages([
                     'message' => 'Siswa dengan NIS ' . $request->qr_data . ' tidak ditemukan.',
-                ], 404);
+                ]);
             }
 
             // Get active class record for the student
@@ -109,10 +109,9 @@ class PresensiController extends Controller
                 ->first();
 
             if (!$riwayatKelas) {
-                return response()->json([
-                    'success' => false,
+                throw ValidationException::withMessages([
                     'message' => 'Siswa tidak memiliki kelas aktif.',
-                ], 404);
+                ]);
             }
 
             // Check if already marked attendance for today
@@ -122,15 +121,11 @@ class PresensiController extends Controller
                 ->first();
 
             if ($existingPresensi) {
-                return response()->json([
-                    'success' => false,
+
+                throw ValidationException::withMessages([
                     'message' => 'Presensi untuk siswa ' . $siswa->nama_lengkap . ' sudah tercatat hari ini (' . $existingPresensi->status . ').',
-                    'data' => [
-                        'siswa' => $siswa,
-                        'existing_status' => $existingPresensi->status,
-                        'existing_time' => $existingPresensi->tanggal,
-                    ]
-                ], 409);
+                ]);
+
             }
 
             // Create attendance record
@@ -142,23 +137,17 @@ class PresensiController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Presensi berhasil dicatat untuk ' . $siswa->nama_lengkap,
-                'data' => [
-                    'siswa' => $siswa,
-                    'presensi' => $presensi,
-                    'kelas' => $riwayatKelas->kelas,
-                ]
-            ]);
+            return redirect()->back()->with(
+                'message',
+                'Presensi berhasil dicatat untuk ' . $siswa->nama_lengkap,
+            );
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat memproses presensi: ' . $e->getMessage(),
-            ], 500);
+
+            throw ValidationException::withMessages([
+                'error' => 'Terjadi kesalahan saat memproses QR Code: ' . $e->getMessage(),
+            ]);
         }
     }
 
@@ -223,11 +212,11 @@ class PresensiController extends Controller
 
         try {
             $presensi = Presensi::findOrFail($request->id);
-            
+
             // Check for duplicate attendance if riwayat_kelas_id or tanggal is being updated
             $newRiwayatKelasId = $request->riwayat_kelas_id ?? $presensi->riwayat_kelas_id;
             $newTanggal = $request->tanggal ?? $presensi->tanggal;
-            
+
             $existingPresensi = Presensi::where('riwayat_kelas_id', $newRiwayatKelasId)
                 ->whereDate('tanggal', $newTanggal)
                 ->where('id', '!=', $request->id) // Exclude current record
@@ -237,24 +226,24 @@ class PresensiController extends Controller
                 // Get student name for better error message
                 $riwayatKelas = RiwayatKelas::with('siswa')->find($newRiwayatKelasId);
                 $siswaName = $riwayatKelas->siswa->nama_lengkap ?? 'Siswa';
-                
+
                 DB::rollBack();
                 throw ValidationException::withMessages([
                     'riwayat_kelas_id' => 'Presensi untuk ' . $siswaName . ' pada tanggal ' . date('d/m/Y', strtotime($newTanggal)) . ' sudah tercatat dengan status: ' . ucfirst($existingPresensi->status),
                 ]);
             }
-            
+
             $updateData = [
                 'status' => $request->status,
                 'keterangan' => $request->keterangan,
                 'tanggal' => $request->tanggal ?? $presensi->tanggal,
             ];
-            
+
             // Only update riwayat_kelas_id if provided
             if ($request->riwayat_kelas_id) {
                 $updateData['riwayat_kelas_id'] = $request->riwayat_kelas_id;
             }
-            
+
             $presensi->update($updateData);
 
             DB::commit();
@@ -276,16 +265,18 @@ class PresensiController extends Controller
 
         try {
             // Get students with their active class records for the specified class
-            $siswa = Siswa::with(['riwayat_kelas' => function($query) use ($request) {
-                $query->where('kelas_id', $request->kelas_id)
-                      ->where('status', 'aktif')
-                      ->with('kelas');
-            }])
-            ->whereHas('riwayat_kelas', function($query) use ($request) {
-                $query->where('kelas_id', $request->kelas_id)
-                      ->where('status', 'aktif');
-            })
-            ->get();
+            $siswa = Siswa::with([
+                'riwayat_kelas' => function ($query) use ($request) {
+                    $query->where('kelas_id', $request->kelas_id)
+                        ->where('status', 'aktif')
+                        ->with('kelas');
+                }
+            ])
+                ->whereHas('riwayat_kelas', function ($query) use ($request) {
+                    $query->where('kelas_id', $request->kelas_id)
+                        ->where('status', 'aktif');
+                })
+                ->get();
 
             return response()->json([
                 'success' => true,

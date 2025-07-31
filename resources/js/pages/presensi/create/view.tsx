@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { ArrowLeft, Camera, CameraOff, RotateCcw, Scan, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -242,89 +242,54 @@ const QRCodeScanner = () => {
                     },
                 });
 
-                // Make API call to process attendance
-                const response = await fetch(route('presensi.process-qr'), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    },
-                    body: JSON.stringify({
+                router.post(
+                    route('presensi.process-qr'),
+                    {
                         qr_data: qrData,
                         status: 'hadir',
-                    }),
-                });
+                    },
+                    {
+                        preserveScroll: true,
+                        onSuccess: (page) => {
+                            console.log(page);
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Presensi Berhasil',
+                                text: `Presensi berhasil dicatat`,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                            });
 
-                const result = await response.json();
-
-                if (result.success) {
-                    // Show success alert with auto close
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Presensi Berhasil!',
-                        html: `
-            <div class="text-left">
-              <p><strong>Nama:</strong> ${result.data.siswa.nama_lengkap}</p>
-              <p><strong>NIS:</strong> ${result.data.siswa.nis}</p>
-              <p><strong>Kelas:</strong> ${result.data.kelas.name}</p>
-              <p><strong>Status:</strong> ${result.data.presensi.status}</p>
-              <p><strong>Waktu:</strong> ${new Date(result.data.presensi.tanggal).toLocaleString('id-ID')}</p>
-            </div>
-          `,
-                        timer: 2000, // Auto close after 2 seconds
-                        timerProgressBar: true,
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                    }).then(() => {
-                        // Reset scanner for next scan automatically (keep video stream)
-                        setScanResult(null);
-                        setError(null);
-
-                        // Resume scanning with existing video stream
-                        setTimeout(() => {
-                            resumeScanning();
-                        }, 500);
-                    });
-                } else {
-                    // Handle error response
-                    if (response.status === 409) {
-                        // Already marked attendance, show brief message and continue
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Sudah Absen',
-                            text: result.message,
-                            timer: 2000,
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                            allowOutsideClick: false,
-                        }).then(() => {
-                            // Reset scanner and continue scanning (keep video stream)
+                            // Reset scan result and error
                             setScanResult(null);
                             setError(null);
+
+                            // Resume scanning after a brief delay
                             setTimeout(() => {
                                 resumeScanning();
                             }, 500);
-                        });
-                    } else {
-                        // Other errors
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal Memproses Presensi',
-                            text: result.message,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                            allowOutsideClick: false,
-                        }).then(() => {
-                            // Reset scanner for retry (keep video stream)
+                        },
+                        onError: (errors: any) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memproses Presensi',
+                                text: errors.error || 'Terjadi kesalahan saat memproses presensi. Silakan coba lagi.',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                            });
                             setScanResult(null);
-                            setError(null);
+                            setError(errors.message || 'Terjadi kesalahan saat memproses presensi. Silakan coba lagi.');
+                            console.error('Error processing attendance:', errors);
                             setTimeout(() => {
                                 resumeScanning();
                             }, 500);
-                        });
-                    }
-                }
+                        },
+                    },
+                );
             } catch (error) {
                 console.error('Error processing attendance:', error);
 
@@ -503,8 +468,8 @@ const QRCodeScanner = () => {
 
                     {/* Camera Preview */}
                     <Card>
-                        <CardContent className="pt-6 h-full">
-                            <div className="bg-muted relative aspect-video w-full min-h-[600px] overflow-hidden rounded-lg">
+                        <CardContent className="h-full pt-6">
+                            <div className="bg-muted relative aspect-video min-h-[600px] w-full overflow-hidden rounded-lg">
                                 {isLoading && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="space-y-4 text-center">
