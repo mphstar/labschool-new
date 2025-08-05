@@ -46,14 +46,14 @@ const DialogDate = ({ onChange }: DialogDateProps) => {
 
     return (
         <Dialog>
-            <form
+            <form className='w-full md:w-fit'
                 onSubmit={(e) => {
                     e.preventDefault();
                     onChange && onChange(range);
                 }}
             >
                 <DialogTrigger asChild>
-                    <Button variant="outline">
+                    <Button className='w-full' variant="outline">
                         <FilterIcon className="h-4 w-4" /> Filter
                     </Button>
                 </DialogTrigger>
