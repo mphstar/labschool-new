@@ -59,7 +59,12 @@ const QRCodeScanner = () => {
             setCameras(videoDevices);
 
             if (videoDevices.length > 0) {
-                setSelectedCameraId(videoDevices[0].deviceId);
+                const backCamera = videoDevices.find((device) => device.label.toLowerCase().includes('back'));
+                if (backCamera) {
+                    setSelectedCameraId(backCamera.deviceId);
+                } else {
+                    setSelectedCameraId(videoDevices[0].deviceId);
+                }
             }
         } catch (err) {
             setHasPermission(false);
@@ -252,7 +257,7 @@ const QRCodeScanner = () => {
                         preserveScroll: true,
                         onSuccess: (page) => {
                             console.log(page);
-                            
+
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Presensi Berhasil',

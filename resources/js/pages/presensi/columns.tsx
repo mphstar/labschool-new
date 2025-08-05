@@ -145,10 +145,30 @@ export const columns: ColumnDef<PresensiType>[] = [
             return <span className="px-2">{keterangan || '-'}</span>;
         },
     },
-
     {
         accessorKey: 'tanggal',
         header: 'Tanggal',
+        filterFn: (row, id, value) => {
+            if (!value || (!value.from && !value.to)) return true;
+            // Ambil tanggal saja (tanpa jam) untuk perbandingan
+            const rowDate = new Date(row.getValue(id));
+            const rowDateOnly = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate(), 0, 0, 0, 0);
+            let start = value.from ? (typeof value.from === 'string' ? new Date(value.from) : value.from) : null;
+            let end = value.to ? (typeof value.to === 'string' ? new Date(value.to) : value.to) : null;
+            // startOnly: 00:00:01, endOnly: 23:59:00
+            const startOnly = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 1) : null;
+            const endOnly = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 0) : null;
+            if (startOnly && endOnly) {
+                return rowDateOnly >= startOnly && rowDateOnly <= endOnly;
+            }
+            if (startOnly) {
+                return rowDateOnly >= startOnly;
+            }
+            if (endOnly) {
+                return rowDateOnly <= endOnly;
+            }
+            return true;
+        },
         cell: ({ cell }) => {
             const date = new Date(cell.getValue<string>());
             return (

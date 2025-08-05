@@ -17,7 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { router, usePage } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import DialogDate from './dialog-date';
 import Swal from 'sweetalert2';
 import { KelasType } from '../kelas/columns';
 import { TahunAkademikType } from '../tahun-akademik/columns';
@@ -31,6 +32,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = useState({});
+    const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
     const table = useReactTable({
         data,
@@ -50,6 +52,19 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             rowSelection,
         },
     });
+
+    // Sinkronkan filter tanggal ke table jika dateRange berubah
+    useEffect(() => {
+        if (dateRange.from || dateRange.to) {
+            
+            table.getColumn('tanggal')?.setFilterValue({
+                from: dateRange.from ? dateRange.from.toISOString().slice(0, 10) : undefined,
+                to: dateRange.to ? dateRange.to.toISOString().slice(0, 10) : undefined,
+            });
+        } else {
+            table.getColumn('tanggal')?.setFilterValue(undefined);
+        }
+    }, [dateRange]);
 
     const onDelete = () => {
         const payloadRequest = table.getFilteredSelectedRowModel().rows.map((row) => {
@@ -140,6 +155,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 ))}
                             </SelectContent>
                         </Select>
+                        <DialogDate onChange={setDateRange} />
                     </>
                 }
             />
