@@ -13,4 +13,8 @@ class Keuangan extends Model
     {
         return $this->belongsTo(CategoryKeuangan::class, 'category_keuangan_id');
     }
+
+    protected $casts = [
+        'jumlah' => 'integer', // atau 'decimal:0' / 'float'
+    ];
 }

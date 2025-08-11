@@ -13,4 +13,8 @@ class DetailNilai extends Model
     {
         return $this->belongsTo(Nilai::class, 'nilai_id');
     }
+
+    protected $casts = [
+        'nilai' => 'integer', // atau 'decimal:0' / 'float'
+    ];
 }
