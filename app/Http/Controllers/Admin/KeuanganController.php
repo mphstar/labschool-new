@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\KeuanganExport;
 use App\Http\Controllers\Controller;
 use App\Models\CategoryKeuangan;
 use App\Models\Keuangan;
@@ -9,9 +10,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KeuanganController extends Controller
 {
+
+    public function export(Request $request)
+    {
+        $categoryId = $request->query('category_id');
+
+        return Excel::download(new KeuanganExport($categoryId), 'keuangan.xlsx');
+    }
+
     public function index()
     {
         $data = Keuangan::with(['category_keuangan'])->latest()->get();

@@ -119,6 +119,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [KeuanganController::class, 'deleteMultiple'])->name('keuangan.delete-multiple');
         Route::post('delete', [KeuanganController::class, 'delete'])->name('keuangan.delete');
         Route::post('update', [KeuanganController::class, 'update'])->name('keuangan.update');
+
+        Route::prefix('export')->group(function () {
+            Route::get('/', [KeuanganController::class, 'export'])->name('keuangan.export');
+        });
     });
 
     Route::prefix('surat')->group(function () {

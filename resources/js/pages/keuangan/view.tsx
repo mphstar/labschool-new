@@ -7,6 +7,8 @@ import { Plus } from 'lucide-react';
 import { KeuanganType, columns } from './columns';
 import { DataTable } from './data-table';
 import FormDialog from './form';
+import { MdFileUpload } from 'react-icons/md';
+import ExportKeuangan from './export';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,6 +33,7 @@ export default function Product() {
                         <p className="text-muted-foreground">Here&apos;s a list of your keuangan for this month!</p>
                     </div>
                     <div className="flex gap-2">
+                        <ExportKeuangan />
                         <Button
                             onClick={() => {
                                 store.setDialog('create');
