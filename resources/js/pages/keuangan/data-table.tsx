@@ -21,6 +21,7 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import { CategoryKeuanganType } from '../category-keuangan/columns';
+import { KeuanganType } from './columns';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -206,16 +207,17 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             <TableCell colSpan={columns.length} className="border-none bg-transparent py-4 text-end">
                                 {/* Summary Footer */}
                                 {(() => {
+
                                     // Ambil data dari table.getRowModel().rows
                                     const rows = table.getRowModel().rows;
                                     let totalMasuk = 0;
                                     let totalKeluar = 0;
                                     rows.forEach((row) => {
-                                        const data = row.original as any;
+                                        const data = row.original as KeuanganType;
                                         if (data.jenis === 'masuk') {
-                                            totalMasuk += data.jumlah || 0;
+                                            totalMasuk += data.jumlah ?? 0;
                                         } else if (data.jenis === 'keluar') {
-                                            totalKeluar += data.jumlah || 0;
+                                            totalKeluar += data.jumlah ?? 0;
                                         }
                                     });
                                     const selisih = totalMasuk - totalKeluar;
@@ -224,10 +226,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                         <div className="flex w-full justify-end">
                                             <div className="flex w-fit flex-row justify-end gap-2">
                                                 <Badge>
-                                                    <span className="font-semibold">Total Pemasukan:</span> Rp {totalMasuk.toLocaleString('id-ID')}
+                                                    <span className="font-semibold">Total Pemasukan:</span> Rp. {totalMasuk.toLocaleString('id-ID')}
                                                 </Badge>
                                                 <Badge>
-                                                    <span className="font-semibold">Total Pengeluaran:</span> Rp {totalKeluar.toLocaleString('id-ID')}
+                                                    <span className="font-semibold">Total Pengeluaran:</span> Rp. {totalKeluar.toLocaleString('id-ID')}
                                                 </Badge>
                                                 <Badge
                                                     className="flex w-fit justify-between rounded px-3 py-1 font-bold"

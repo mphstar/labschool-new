@@ -106,7 +106,7 @@ const FormDialog = () => {
                             <InputError message={errors.name} className="col-span-4 col-start-3 mt-2" />
                         </div>
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
-                            <Label className="col-span-2 text-right">Jenis</Label>
+                            <Label className="col-span-2 text-right">Guru Pengajar</Label>
                             <Select value={data.user_id} onValueChange={(value) => setData('user_id', value)}>
                                 <SelectTrigger className="col-span-4">
                                     <SelectValue placeholder="Pilih Guru" />

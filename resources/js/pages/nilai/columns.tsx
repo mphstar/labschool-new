@@ -175,7 +175,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'N-SUM',
         cell: ({ cell }) => {
-            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') || [];
+            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') ?? [];
 
             if (values.length === 0) {
                 return <span className="text-gray-500">0</span>;
@@ -193,7 +193,7 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'N SAS/SAT',
         cell: ({ cell }) => {
-            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis !== 'materi') || [];
+            const values = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis !== 'materi') ?? [];
 
             if (values.length === 0) {
                 return <span className="text-gray-500">0</span>;
@@ -211,8 +211,8 @@ export const columns: ColumnDef<SiswaType>[] = [
         accessorKey: 'kelas_aktif.nilai_mapel.detail_nilai',
         header: 'NR',
         cell: ({ cell }) => {
-            const sat = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') || [];
-            const sas = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis != 'materi') || [];
+            const sat = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis == 'materi') ?? [];
+            const sas = cell.getValue<DetailNilaiType[]>().filter((item) => item.jenis != 'materi') ?? [];
 
             const totalSat = sat.reduce((acc, item) => acc + item.nilai, 0);
             const totalSas = sas.reduce((acc, item) => acc + item.nilai, 0);
