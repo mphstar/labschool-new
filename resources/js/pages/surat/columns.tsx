@@ -92,6 +92,29 @@ export const columns: ColumnDef<SuratType>[] = [
         cell: ({ row }) => row.index + 1,
     },
     {
+        accessorKey: 'tanggal_surat',
+        header: ({ column }) => (
+            <Button className="gap-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                Tanggal
+                <ArrowUpDown className="ml-1 h-4 w-4" />
+            </Button>
+        ),
+        // Ensure dates are sorted chronologically, not as plain strings
+        sortingFn: (rowA, rowB, columnId) => {
+            const a = rowA.getValue<string>(columnId);
+            const b = rowB.getValue<string>(columnId);
+            const aTime = a ? new Date(a).getTime() : 0;
+            const bTime = b ? new Date(b).getTime() : 0;
+            const aNum = isNaN(aTime) ? 0 : aTime;
+            const bNum = isNaN(bTime) ? 0 : bTime;
+            return aNum - bNum;
+        },
+        cell: ({ cell }) => {
+            const date = new Date(cell.getValue<string>());
+            return <span>{date.toLocaleDateString('id-ID')}</span>;
+        },
+    },
+    {
         accessorKey: 'nomor_surat',
         header: ({ column }) => {
             return (
@@ -145,14 +168,7 @@ export const columns: ColumnDef<SuratType>[] = [
         },
     },
 
-    {
-        accessorKey: 'tanggal_surat',
-        header: 'Tanggal',
-        cell: ({ cell }) => {
-            const date = new Date(cell.getValue<string>());
-            return <span>{date.toLocaleDateString('id-ID')}</span>;
-        },
-    },
+    
     {
         id: 'actions',
         cell: ({ row }) => {

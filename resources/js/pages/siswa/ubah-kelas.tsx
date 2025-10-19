@@ -85,7 +85,7 @@ const UbahKelas = () => {
                                     <SelectGroup>
                                         <SelectLabel>Status Siswa</SelectLabel>
                                         <SelectItem value="aktif">Aktif</SelectItem>
-                                        <SelectItem value="putus">Putus Sekolah</SelectItem>
+                                        <SelectItem value="putus">Mutasi</SelectItem>
                                         <SelectItem value="lulus">Lulus</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
