@@ -31,7 +31,7 @@ interface KelasType {
 const FormDialog = () => {
     const context = useProductStore();
     const { kelas } = usePage().props as unknown as { kelas: KelasType[] };
-    
+
     const [filteredSiswa, setFilteredSiswa] = useState<SiswaType[]>([]);
     const [isLoadingSiswa, setIsLoadingSiswa] = useState(false);
 
@@ -42,7 +42,9 @@ const FormDialog = () => {
         kelas_id: context.currentRow?.riwayat_kelas?.kelas?.id ?? '',
         status: context.currentRow?.status ?? 'hadir',
         keterangan: context.currentRow?.keterangan ?? '',
-        tanggal: context.currentRow?.tanggal ? context.currentRow.tanggal.split(' ')[0] : new Date().toISOString().split('T')[0],
+        tanggal: context.currentRow?.tanggal
+            ? context.currentRow.tanggal.replace(' ', 'T').slice(0, 16)
+            : new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16),
     });
 
     useEffect(() => {
@@ -53,8 +55,8 @@ const FormDialog = () => {
             setData('kelas_id', context.currentRow.riwayat_kelas.kelas.id.toString());
             setData('status', context.currentRow.status);
             setData('keterangan', context.currentRow.keterangan);
-            setData('tanggal', context.currentRow.tanggal.split(' ')[0]);
-            
+            setData('tanggal', context.currentRow.tanggal.replace(' ', 'T').slice(0, 16));
+
             // Load siswa for the selected kelas when updating
             if (context.currentRow.riwayat_kelas.kelas.id) {
                 fetchSiswaByKelas(context.currentRow.riwayat_kelas.kelas.id.toString());
@@ -96,7 +98,7 @@ const FormDialog = () => {
     // Handle siswa change to get riwayat_kelas_id
     const handleSiswaChange = (siswaId: string) => {
         setData('siswa_id', siswaId);
-        
+
         const selectedSiswa = filteredSiswa.find(s => s.id.toString() === siswaId);
         if (selectedSiswa) {
             const riwayatKelas = selectedSiswa.riwayat_kelas.find(rk => rk.kelas.id.toString() === data.kelas_id);
@@ -200,16 +202,16 @@ const FormDialog = () => {
 
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
                             <Label className="col-span-2 text-right">Siswa</Label>
-                            <Select 
-                                value={data.siswa_id} 
+                            <Select
+                                value={data.siswa_id}
                                 onValueChange={handleSiswaChange}
                                 disabled={!data.kelas_id || isLoadingSiswa}
                             >
                                 <SelectTrigger className="col-span-4">
                                     <SelectValue placeholder={
-                                        isLoadingSiswa ? "Memuat siswa..." : 
-                                        !data.kelas_id ? "Pilih kelas terlebih dahulu" : 
-                                        "Pilih Siswa"
+                                        isLoadingSiswa ? "Memuat siswa..." :
+                                            !data.kelas_id ? "Pilih kelas terlebih dahulu" :
+                                                "Pilih Siswa"
                                     } />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -248,7 +250,7 @@ const FormDialog = () => {
                         <div className="grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1">
                             <Label className="col-span-2 text-right">Tanggal</Label>
                             <Input
-                                type="date"
+                                type="datetime-local"
                                 value={data.tanggal}
                                 onChange={(e) => setData('tanggal', e.target.value)}
                                 className="col-span-4"

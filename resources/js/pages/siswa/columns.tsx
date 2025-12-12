@@ -19,7 +19,7 @@ type RiwayatKelasType = {
 export type SiswaType = {
     id: number;
 
-    kelas_aktif: RiwayatKelasType;
+    kelas_aktif?: RiwayatKelasType;
 
     nis: string;
     nisn: string;
@@ -97,7 +97,7 @@ const onDelete = (id: number) => {
                             confirmButtonText: 'OK',
                         });
                     },
-                    onFinish: () => {},
+                    onFinish: () => { },
                 },
             );
         }
@@ -179,9 +179,9 @@ export const columns: ColumnDef<SiswaType>[] = [
     },
     {
         id: 'kelas',
-        accessorFn: (row) => row.kelas_aktif.kelas.name,
+        accessorFn: (row) => row.kelas_aktif?.kelas?.name ?? '-',
         filterFn: (row, id, value) => {
-            return row.original.kelas_aktif.kelas.id == value;
+            return row.original.kelas_aktif?.kelas?.id == value;
         },
         header: 'Kelas',
         cell: ({ cell }) => {

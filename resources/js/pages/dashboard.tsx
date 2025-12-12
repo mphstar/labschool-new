@@ -49,6 +49,10 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ dashboardData }: DashboardProps) {
+    const formatCurrency = (value: number | string) => {
+        return `Rp. ${Number(value).toLocaleString('id-ID')}`;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -121,7 +125,7 @@ export default function Dashboard({ dashboardData }: DashboardProps) {
                             <TrendingUp className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">Rp {dashboardData.pemasukanBulanIni.toLocaleString('id-ID')}</div>
+                            <div className="text-2xl font-bold text-green-600">{formatCurrency(dashboardData.pemasukanBulanIni)}</div>
                             <p className="text-muted-foreground text-xs">Total pemasukan</p>
                         </CardContent>
                     </Card>
@@ -132,7 +136,7 @@ export default function Dashboard({ dashboardData }: DashboardProps) {
                             <TrendingDown className="h-4 w-4 text-red-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">Rp {dashboardData.pengeluaranBulanIni.toLocaleString('id-ID')}</div>
+                            <div className="text-2xl font-bold text-red-600">{formatCurrency(dashboardData.pengeluaranBulanIni)}</div>
                             <p className="text-muted-foreground text-xs">Total pengeluaran</p>
                         </CardContent>
                     </Card>
@@ -163,30 +167,28 @@ export default function Dashboard({ dashboardData }: DashboardProps) {
                             <div className="flex items-center justify-between rounded-lg bg-green-50 p-3">
                                 <span className="text-sm font-medium text-green-700">Total Pemasukan</span>
                                 <span className="font-bold text-green-700">
-                                    Rp {dashboardData.financialSummary.total_pemasukan_tahun.toLocaleString('id-ID')}
+                                    {formatCurrency(dashboardData.financialSummary.total_pemasukan_tahun)}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between rounded-lg bg-red-50 p-3">
                                 <span className="text-sm font-medium text-red-700">Total Pengeluaran</span>
                                 <span className="font-bold text-red-700">
-                                    Rp {dashboardData.financialSummary.total_pengeluaran_tahun.toLocaleString('id-ID')}
+                                    {formatCurrency(dashboardData.financialSummary.total_pengeluaran_tahun)}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
                                 <span className="text-sm font-medium text-blue-700">Saldo</span>
                                 <span
-                                    className={`font-bold ${
-                                        dashboardData.financialSummary.total_pemasukan_tahun -
-                                            dashboardData.financialSummary.total_pengeluaran_tahun >=
+                                    className={`font-bold ${dashboardData.financialSummary.total_pemasukan_tahun -
+                                        dashboardData.financialSummary.total_pengeluaran_tahun >=
                                         0
-                                            ? 'text-green-700'
-                                            : 'text-red-700'
-                                    }`}
+                                        ? 'text-green-700'
+                                        : 'text-red-700'
+                                        }`}
                                 >
-                                    Rp{' '}
-                                    {(
-                                        dashboardData.financialSummary.total_pemasukan_tahun - dashboardData.financialSummary.total_pengeluaran_tahun
-                                    ).toLocaleString('id-ID')}
+                                    {formatCurrency(
+                                        dashboardData.financialSummary.total_pemasukan_tahun - dashboardData.financialSummary.total_pengeluaran_tahun,
+                                    )}
                                 </span>
                             </div>
                         </CardContent>

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
 
 class RiwayatKelas extends Model
 {
+    use HasFactory;
+
     protected $table = 'riwayat_kelas';
     protected $guarded = [];
 
