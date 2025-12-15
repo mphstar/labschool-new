@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\RiwayatKelas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -119,5 +120,51 @@ class KelasController extends Controller
                 'error' => 'Internal Server Error',
             ]);
         }
+    }
+
+    public function detailPrestasi($kelas_id)
+    {
+        $kelas = Kelas::with('guru')->findOrFail($kelas_id);
+
+        // Get siswa aktif in this class who have prestasi
+        $data = RiwayatKelas::with(['siswa.prestasi', 'siswa.kelas_aktif.kelas'])
+            ->where('kelas_id', $kelas_id)
+            ->where('status', 'aktif')
+            ->whereHas('siswa.prestasi')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'siswa' => $item->siswa,
+                    'prestasi' => $item->siswa->prestasi,
+                ];
+            });
+
+        return Inertia::render('kelas/prestasi', [
+            'kelas' => $kelas,
+            'data' => $data,
+        ]);
+    }
+
+    public function detailKenakalan($kelas_id)
+    {
+        $kelas = Kelas::with('guru')->findOrFail($kelas_id);
+
+        // Get siswa aktif in this class who have kenakalan
+        $data = RiwayatKelas::with(['siswa.kenakalan', 'siswa.kelas_aktif.kelas'])
+            ->where('kelas_id', $kelas_id)
+            ->where('status', 'aktif')
+            ->whereHas('siswa.kenakalan')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'siswa' => $item->siswa,
+                    'kenakalan' => $item->siswa->kenakalan,
+                ];
+            });
+
+        return Inertia::render('kelas/kenakalan', [
+            'kelas' => $kelas,
+            'data' => $data,
+        ]);
     }
 }

@@ -21,4 +21,23 @@ class Kelas extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function riwayat_kelas()
+    {
+        return $this->hasMany(RiwayatKelas::class, 'kelas_id', 'id');
+    }
+
+    public function siswa_aktif()
+    {
+        return $this->hasManyThrough(
+            Siswa::class,
+            RiwayatKelas::class,
+            'kelas_id',
+            'id',
+            'id',
+            'siswa_id'
+        )->whereHas('kelas_aktif', function ($query) {
+            $query->where('kelas_id', $this->id)->where('status', 'aktif');
+        });
+    }
 }

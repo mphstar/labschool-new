@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useProductStore from '@/stores/useProduct';
 import { User } from '@/types';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -58,7 +58,7 @@ const onDelete = (id: number) => {
                             confirmButtonText: 'OK',
                         });
                     },
-                    onFinish: () => {},
+                    onFinish: () => { },
                 },
             );
         }
@@ -131,10 +131,17 @@ export const columns: ColumnDef<KelasType>[] = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
-                        <DropdownMenuSeparator /> */}
+                    <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuLabel>Data Siswa</DropdownMenuLabel>
+                        <Link href={`/kelas/${payment.id}/prestasi`}>
+                            <DropdownMenuItem>Siswa Berprestasi</DropdownMenuItem>
+                        </Link>
+                        <Link href={`/kelas/${payment.id}/kenakalan`}>
+                            <DropdownMenuItem>Siswa Bermasalah</DropdownMenuItem>
+                        </Link>
+
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Kelola Data</DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
@@ -145,11 +152,12 @@ export const columns: ColumnDef<KelasType>[] = [
                             Edit Data
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
                             onClick={() => {
                                 onDelete(payment.id);
                             }}
                         >
-                            Delete Data
+                            Hapus Data
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

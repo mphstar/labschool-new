@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CapaianKompetensi;
 use App\Models\Kelas;
+use App\Models\KenakalanSiswa;
 use App\Models\MataPelajaran;
 use App\Models\PengaturanWebsite;
+use App\Models\PrestasiSiswa;
 use App\Models\RiwayatKelas;
 use App\Models\Siswa;
 use App\Models\TahunAkademik;
@@ -421,5 +423,215 @@ class SiswaController extends Controller
 
 
         return $pdf->stream('rapor-' . $siswa->nama_lengkap . '.pdf', []);
+    }
+
+    // ==================== PRESTASI SISWA ====================
+
+    public function detailPrestasi($siswa_id)
+    {
+        $siswa = Siswa::with(['kelas_aktif.kelas'])->findOrFail($siswa_id);
+        $data = PrestasiSiswa::where('siswa_id', $siswa_id)->latest()->get();
+
+        return Inertia::render('siswa/prestasi', [
+            'siswa' => $siswa,
+            'data' => $data,
+        ]);
+    }
+
+    public function storePrestasi(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswa,id',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'penyelenggara' => 'nullable|string|max:255',
+            'tanggal' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            PrestasiSiswa::create($request->all());
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Prestasi siswa berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function updatePrestasi(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:prestasi_siswa,id',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'penyelenggara' => 'nullable|string|max:255',
+            'tanggal' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            PrestasiSiswa::findOrFail($request->id)->update($request->all());
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Prestasi siswa berhasil diupdate');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function deletePrestasi(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            PrestasiSiswa::findOrFail($request->id)->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Prestasi siswa berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function deleteMultiplePrestasi(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $ids = collect($request->data)->pluck('id');
+            PrestasiSiswa::whereIn('id', $ids)->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Prestasi siswa berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // ==================== KENAKALAN SISWA ====================
+
+    public function detailKenakalan($siswa_id)
+    {
+        $siswa = Siswa::with(['kelas_aktif.kelas'])->findOrFail($siswa_id);
+        $data = KenakalanSiswa::where('siswa_id', $siswa_id)->latest()->get();
+
+        return Inertia::render('siswa/kenakalan', [
+            'siswa' => $siswa,
+            'data' => $data,
+        ]);
+    }
+
+    public function storeKenakalan(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswa,id',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'tanggal' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            KenakalanSiswa::create($request->all());
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Kenakalan siswa berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function updateKenakalan(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:kenakalan_siswa,id',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'tanggal' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            KenakalanSiswa::findOrFail($request->id)->update($request->all());
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Kenakalan siswa berhasil diupdate');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function deleteKenakalan(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            KenakalanSiswa::findOrFail($request->id)->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Kenakalan siswa berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function deleteMultipleKenakalan(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $ids = collect($request->data)->pluck('id');
+            KenakalanSiswa::whereIn('id', $ids)->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Kenakalan siswa berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

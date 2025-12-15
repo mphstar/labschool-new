@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useSiswaStore from '@/stores/useSiswa';
 import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
@@ -268,22 +268,11 @@ export const columns: ColumnDef<SiswaType>[] = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        {/* <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
-                        <DropdownMenuSeparator /> */}
+                    <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuLabel>Dokumen</DropdownMenuLabel>
                         <a href={`/siswa/raport/${payment.id}`} target="_blank">
                             <DropdownMenuItem>Cetak Rapor</DropdownMenuItem>
                         </a>
-                        <DropdownMenuItem
-                            onClick={() => {
-                                store.setCurrentRow(payment);
-                                store.setDialog('ubah_kelas');
-                                store.setOpen(true);
-                            }}
-                        >
-                            Ubah Kelas
-                        </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => {
                                 store.setCurrentRow(payment);
@@ -293,16 +282,37 @@ export const columns: ColumnDef<SiswaType>[] = [
                         >
                             Lihat QRCode
                         </DropdownMenuItem>
-                        {/* <DropdownMenuItem>Data Nilai</DropdownMenuItem> */}
+
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Data Siswa</DropdownMenuLabel>
+                        <Link href={`/siswa/${payment.id}/prestasi`}>
+                            <DropdownMenuItem>Data Prestasi</DropdownMenuItem>
+                        </Link>
+                        <Link href={`/siswa/${payment.id}/kenakalan`}>
+                            <DropdownMenuItem>Data Kenakalan</DropdownMenuItem>
+                        </Link>
+
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Kelola Data</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                store.setCurrentRow(payment);
+                                store.setDialog('ubah_kelas');
+                                store.setOpen(true);
+                            }}
+                        >
+                            Ubah Kelas
+                        </DropdownMenuItem>
                         <Link href={`/siswa/${payment.id}/edit`}>
                             <DropdownMenuItem>Edit Data</DropdownMenuItem>
                         </Link>
                         <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
                             onClick={() => {
                                 onDelete(payment.id);
                             }}
                         >
-                            Delete Data
+                            Hapus Data
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

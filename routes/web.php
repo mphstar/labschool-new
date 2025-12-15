@@ -74,6 +74,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('delete-multiple', [KelasController::class, 'deleteMultiple'])->name('kelas.delete-multiple');
         Route::post('delete', [KelasController::class, 'delete'])->name('kelas.delete');
         Route::post('update', [KelasController::class, 'update'])->name('kelas.update');
+
+        // Prestasi & Kenakalan per kelas
+        Route::get('/{kelas_id}/prestasi', [KelasController::class, 'detailPrestasi'])->name('kelas.prestasi.index');
+        Route::get('/{kelas_id}/kenakalan', [KelasController::class, 'detailKenakalan'])->name('kelas.kenakalan.index');
     });
 
     Route::prefix('category-keuangan')->group(function () {
@@ -158,6 +162,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/qrcode-pdf', [SiswaController::class, 'generateQRCodePdf'])->name('siswa.qrcode-pdf');
 
         Route::get('/raport/{id}', [SiswaController::class, 'cetakRapor'])->name('siswa.raport');
+
+        // Prestasi routes
+        Route::get('/{siswa_id}/prestasi', [SiswaController::class, 'detailPrestasi'])->name('siswa.prestasi.index');
+        Route::post('/prestasi/store', [SiswaController::class, 'storePrestasi'])->name('siswa.prestasi.store');
+        Route::post('/prestasi/update', [SiswaController::class, 'updatePrestasi'])->name('siswa.prestasi.update');
+        Route::post('/prestasi/delete', [SiswaController::class, 'deletePrestasi'])->name('siswa.prestasi.delete');
+        Route::post('/prestasi/delete-multiple', [SiswaController::class, 'deleteMultiplePrestasi'])->name('siswa.prestasi.delete-multiple');
+
+        // Kenakalan routes
+        Route::get('/{siswa_id}/kenakalan', [SiswaController::class, 'detailKenakalan'])->name('siswa.kenakalan.index');
+        Route::post('/kenakalan/store', [SiswaController::class, 'storeKenakalan'])->name('siswa.kenakalan.store');
+        Route::post('/kenakalan/update', [SiswaController::class, 'updateKenakalan'])->name('siswa.kenakalan.update');
+        Route::post('/kenakalan/delete', [SiswaController::class, 'deleteKenakalan'])->name('siswa.kenakalan.delete');
+        Route::post('/kenakalan/delete-multiple', [SiswaController::class, 'deleteMultipleKenakalan'])->name('siswa.kenakalan.delete-multiple');
     });
 
     Route::prefix('data-ppdb')->group(function () {
