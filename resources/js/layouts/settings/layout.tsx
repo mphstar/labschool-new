@@ -37,6 +37,11 @@ const sidebarNavItems: NavItem[] = [
         url: '/settings/ppdb',
         icon: null,
     },
+    {
+        title: 'Sidebar Menu',
+        url: '/settings/sidebar-menu',
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

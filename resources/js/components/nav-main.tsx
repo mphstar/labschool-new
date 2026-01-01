@@ -11,10 +11,17 @@ export function NavMain({ items = [], title = "Home" }: { items: NavItem[], titl
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton asChild isActive={item.url === page.url}>
-                            <Link href={item.url}>
-                                {item.icon && <item.icon />}
-                                <span>{item.title}</span>
-                            </Link>
+                            {item.openInNewTab ? (
+                                <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                    {item.icon && <item.icon />}
+                                    <span>{item.title}</span>
+                                </a>
+                            ) : (
+                                <Link href={item.url}>
+                                    {item.icon && <item.icon />}
+                                    <span>{item.title}</span>
+                                </Link>
+                            )}
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 ))}

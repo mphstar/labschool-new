@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\PengaturanWebsite;
+use App\Models\SidebarMenu;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -58,6 +59,14 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
+        // Get sidebar menus if table exists
+        $sidebarMenus = [];
+        if (Schema::hasTable('sidebar_menus')) {
+            $sidebarMenus = SidebarMenu::where('is_active', true)
+                ->orderBy('order')
+                ->get();
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -70,6 +79,7 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'pengaturan' => $pengaturan,
+            'sidebarMenus' => $sidebarMenus,
         ];
     }
 }

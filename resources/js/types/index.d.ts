@@ -20,6 +20,16 @@ export interface NavItem {
     url: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    openInNewTab?: boolean;
+}
+
+export interface SidebarMenu {
+    id: number;
+    title: string;
+    url: string;
+    icon: string | null;
+    order: number;
+    is_active: boolean;
 }
 
 export interface SharedData {
@@ -32,6 +42,7 @@ export interface SharedData {
         logo: string;
         favicon: string;
     };
+    sidebarMenus: SidebarMenu[];
     [key: string]: unknown;
 }
 
@@ -45,3 +56,4 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+

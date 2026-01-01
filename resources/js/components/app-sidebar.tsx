@@ -2,8 +2,8 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { type NavItem, type SharedData, type SidebarMenu as SidebarMenuType } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import {
     Folder,
     LayoutGrid,
@@ -13,8 +13,10 @@ import {
     LucideLayoutTemplate,
     LucideUser,
     PackageSearch,
+    type LucideIcon,
 } from 'lucide-react';
 import AppLogo from './app-logo';
+import { getIconComponent } from '@/pages/settings/sidebar-menu/icon-options';
 
 const mainNavItems: NavItem[] = [
     {
@@ -97,6 +99,16 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { sidebarMenus } = usePage<SharedData>().props;
+
+    // Convert dynamic menus to NavItem format
+    const dynamicMenuItems: NavItem[] = (sidebarMenus || []).map((menu) => ({
+        title: menu.title,
+        url: menu.url,
+        icon: menu.icon ? getIconComponent(menu.icon) : null,
+        openInNewTab: true, // Always open in new tab
+    }));
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -116,6 +128,9 @@ export function AppSidebar() {
                 <NavMain title={'Master Data'} items={masterNavItems} />
                 <NavMain title={'Data Akademik'} items={masterNavDataAkademik} />
                 <NavMain title={'Pencatatan'} items={reportNavItems} />
+                {dynamicMenuItems.length > 0 && (
+                    <NavMain title={'Menu Tambahan'} items={dynamicMenuItems} />
+                )}
             </SidebarContent>
 
             <SidebarFooter>

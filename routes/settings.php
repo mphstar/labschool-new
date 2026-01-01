@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CapaianKompetensiController;
 use App\Http\Controllers\Admin\PengaturanPpdbController;
+use App\Http\Controllers\Admin\SidebarMenuController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -31,4 +32,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/ppdb', [PengaturanPpdbController::class, 'index'])->name('ppdb.index');
     Route::post('settings/ppdb/update', [PengaturanPpdbController::class, 'update'])->name('ppdb.update');
+
+    // Sidebar Menu settings
+    Route::get('settings/sidebar-menu', [SidebarMenuController::class, 'index'])->name('sidebar-menu.index');
+    Route::post('settings/sidebar-menu/store', [SidebarMenuController::class, 'store'])->name('sidebar-menu.store');
+    Route::post('settings/sidebar-menu/update', [SidebarMenuController::class, 'update'])->name('sidebar-menu.update');
+    Route::post('settings/sidebar-menu/delete', [SidebarMenuController::class, 'delete'])->name('sidebar-menu.delete');
+    Route::post('settings/sidebar-menu/delete-multiple', [SidebarMenuController::class, 'deleteMultiple'])->name('sidebar-menu.delete-multiple');
 });
