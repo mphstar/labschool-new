@@ -40,7 +40,31 @@ export default function Website() {
 
         post(route('website.update'), {
             preserveScroll: true,
-            onSuccess: () => {},
+            onSuccess: () => {
+                // Update global appName for future navigations
+                if (typeof window !== 'undefined' && window.__SET_APP_NAME__) {
+                    window.__SET_APP_NAME__(data.name);
+                }
+
+                // Update document title with new name
+                const currentTitle = document.title.split(' - ')[0] || 'Website settings';
+                document.title = `${currentTitle} - ${data.name}`;
+
+                // Update favicon if a new file was uploaded
+                if (data.favicon instanceof File) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+                        if (!link) {
+                            link = document.createElement('link');
+                            link.rel = 'icon';
+                            document.head.appendChild(link);
+                        }
+                        link.href = e.target?.result as string;
+                    };
+                    reader.readAsDataURL(data.favicon);
+                }
+            },
             onError: (e) => {
                 console.error(e);
             },
