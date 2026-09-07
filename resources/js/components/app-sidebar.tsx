@@ -2,9 +2,11 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem, type SharedData, type SidebarMenu as SidebarMenuType } from '@/types';
+import { getIconComponent } from '@/pages/settings/sidebar-menu/icon-options';
+import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    BarChart3,
     Folder,
     LayoutGrid,
     LucideAlignEndVertical,
@@ -13,16 +15,22 @@ import {
     LucideLayoutTemplate,
     LucideUser,
     PackageSearch,
-    type LucideIcon,
 } from 'lucide-react';
 import AppLogo from './app-logo';
-import { getIconComponent } from '@/pages/settings/sidebar-menu/icon-options';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         url: '/dashboard',
         icon: LayoutGrid,
+    },
+];
+
+const reportNavItems: NavItem[] = [
+    {
+        title: 'Laporan',
+        url: '/report',
+        icon: BarChart3,
     },
 ];
 
@@ -67,7 +75,7 @@ const masterNavDataAkademik: NavItem[] = [
     },
 ];
 
-const reportNavItems: NavItem[] = [
+const pencatatanNavItems: NavItem[] = [
     {
         title: 'Keuangan',
         url: '/keuangan',
@@ -127,10 +135,9 @@ export function AppSidebar() {
                 <NavMain items={mainNavItems} />
                 <NavMain title={'Master Data'} items={masterNavItems} />
                 <NavMain title={'Data Akademik'} items={masterNavDataAkademik} />
-                <NavMain title={'Pencatatan'} items={reportNavItems} />
-                {dynamicMenuItems.length > 0 && (
-                    <NavMain title={'Menu Tambahan'} items={dynamicMenuItems} />
-                )}
+                <NavMain title={'Pencatatan'} items={pencatatanNavItems} />
+                <NavMain title={'Report'} items={reportNavItems} />
+                {dynamicMenuItems.length > 0 && <NavMain title={'Menu Tambahan'} items={dynamicMenuItems} />}
             </SidebarContent>
 
             <SidebarFooter>

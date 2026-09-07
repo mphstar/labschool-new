@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+
+    Route::get('report', [ReportController::class, 'index'])->name('report.index');
 
     Route::get('product', [ProductController::class, 'index'])->name('product.index');
     Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
