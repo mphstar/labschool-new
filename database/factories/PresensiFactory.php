@@ -21,7 +21,7 @@ class PresensiFactory extends Factory
             'riwayat_kelas_id' => RiwayatKelas::factory(),
             'status' => $this->faker->randomElement(['hadir', 'izin', 'sakit', 'alfa']),
             'keterangan' => $this->faker->optional()->sentence(),
-            'tanggal' => $this->faker->dateTimeBetween('-2 years', 'now'),
+            'tanggal' => now()->toDateString(),
         ];
     }
 }

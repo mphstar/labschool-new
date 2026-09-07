@@ -44,8 +44,15 @@ class MasterDataSeeder extends Seeder
         CapaianKompetensi::factory()->count(4)->create();
 
         // Classes (must be created after users/teachers)
-        // We assume teachers exist from RoleAndUserSeeder
-        Kelas::factory()->count(6)->create();
+        $teachers = \App\Models\User::where('role', 'guru')->get();
+        $classNames = ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'];
+
+        foreach ($classNames as $index => $name) {
+            Kelas::create([
+                'name' => $name,
+                'user_id' => $teachers->isNotEmpty() ? $teachers[$index % $teachers->count()]->id : null,
+            ]);
+        }
 
         // Subjects (linked to classes)
         MataPelajaran::factory()->count(10)->create();

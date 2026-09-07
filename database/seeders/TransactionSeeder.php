@@ -54,11 +54,15 @@ class TransactionSeeder extends Seeder
                 ->has(DetailNilai::factory()->count(2), 'detail_nilai') // Explicit relationship name
                 ->create();
 
-            // Create attendance records
-            Presensi::factory()
-                ->count(5)
-                ->state(['riwayat_kelas_id' => $riwayat->id])
-                ->create();
+            // Create attendance records (hari ini dan beberapa hari sebelumnya)
+            foreach ([0, 1, 2] as $daysAgo) {
+                Presensi::create([
+                    'riwayat_kelas_id' => $riwayat->id,
+                    'status' => fake()->randomElement(['hadir', 'izin', 'sakit', 'alfa']),
+                    'keterangan' => fake()->optional()->sentence(),
+                    'tanggal' => now()->subDays($daysAgo)->toDateString(),
+                ]);
+            }
         }
 
         // 6. PPDB Registrations
